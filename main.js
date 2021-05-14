@@ -17,7 +17,7 @@ function play_sounds(connection, link) {
 }
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
-	server.listen(43400)
+	server.start(43400,database)
 
 
 });
