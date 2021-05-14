@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@discordjs/opus": "github:discordjs/opus",
+    "discord.js": "^12.5.3",
+    "sqlite3": "^5.0.2",
+    "ytdl": "^1.4.1"
+  }
+}
