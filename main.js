@@ -5,21 +5,22 @@ const Config = require('./config.json')
 const { create } = require('combined-stream');
 const sqlite = require("sqlite3");
 const ms = require('ms');
+const { randomInt } = require('node:crypto');
 class DatabaseApp {
 
 	constructor() {
 		this.database = new sqlite.Database("data.db");
-		this.database.run("CREATE TABLE IF NOT EXISTS messages(author VARCHAR,content VARCHAR,atachments VARCHAR, snowflake VARCHAR )", (err) => {
+		this.database.run("CREATE TABLE IF NOT EXISTS messages(author VARCHAR,content VARCHAR,atachments VARCHAR, snowflake VARCHAR, channel VARCHAR )", (err) => {
 			if (err) { console.log(err) }
 		})
 	}
 	savemessage(msg) {
-		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake) VALUES (?,?,?,?)");
+		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake,channel) VALUES (?,?,?,?,?)");
 		let att = ""
-		 msg.attachments.forEach((element)=>{
-			att += element.url+";"
+		msg.attachments.forEach((element) => {
+			att += element.url + ";"
 		})
-		stm.run(msg.author.id,msg.content,att,msg.id);
+		stm.run(msg.author.id, msg.content, att, msg.id, msg.channel.id);
 		stm.finalize();
 
 	}
@@ -46,23 +47,33 @@ function rickroll() {
 		})
 
 	})
-	
+
 }
 client.on('message', msg => {
-	let regex = /floyd/;
+	let floyd_rg = /(floyd)|(floryd)|(floryst)/i;
+	let jetsm_rg = /(je[st][st]em*)|(by[lł][ea]m)/i
+	if (msg.author.id != client.user.id) {
+		if (floyd_rg.test(msg.content)) {
+			msg.channel.send('Oddychać muszę bo się udusze');
+		}
+		if (jetsm_rg.test(msg.content)) {
 
-	if (regex.test(msg.content)) {
-		msg.channel.send('Oddychać muszę bo się udusze');
-	}
-	if (msg.content.startsWith("-rickroll")) {
-		rickroll();
-	}
-	let att = ""
-		 msg.attachments.forEach((element)=>{
-			att += element.url+";"
-		})
-		console.log(att)
-		database.savemessage(msg)
+			let content_arry = msg.content.split(' ');
+			for (let i = 0; i < content_arry.length - 1; i++) {
+				if (jetsm_rg.test(content_arry[i])) {
+					let emoji = [":smile:", ":sweat_drops:", ":peach: :eggplant:", ":upside_down:"]
+					let rand = randomInt(emoji.length - 1)
+					msg.channel.send("Cześć " + content_arry[i + 1] + " jestem bot " + emoji[rand])
+				}
+				break;
 
+			}
+		}
+		if (msg.content.startsWith("-rickroll")) {
+			rickroll();
+
+		}
+	}
+	database.savemessage(msg)
 });
 client.login(Config.token);
