@@ -1,4 +1,5 @@
 const sqlite = require('sqlite3')
+const assigmentsConfig = require('./website/limits.json')
 class Database {
 
 	constructor() {
@@ -28,7 +29,7 @@ class Database {
 		let subject = assigmentObj.subject;
 		let group = assigmentObj.group;
 
-		if (tilte.length < 60 && description.length < 400 && due != undefined && due != NaN && group.length < 50 && subject.length < 50) {
+		if (tilte.length < assigmentsConfig.title && description.length < assigmentsConfig.description && due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(group) && assigmentsConfig.subjects.includes(subject)) {
 			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due) VALUES (?,?,?,?,?)")
 			stm.run(group, subject, tilte, description, due);
 			stm.finalize()
