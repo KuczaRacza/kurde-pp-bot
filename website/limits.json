@@ -1,6 +1,8 @@
 {
-	"description": 200,
-	"title": 50,
+	"description-max": 200,
+	"description-min":15,
+	"title-max": 50,
+	"title-min":8,
 	"groups": [
 		"1",
 		"2",

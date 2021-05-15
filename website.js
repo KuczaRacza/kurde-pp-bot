@@ -1,4 +1,5 @@
 const { AssertionError } = require('assert');
+
 const http = require('http');
 const dbApp = require('./databse')
 class Server {
@@ -10,11 +11,18 @@ class Server {
 		http.createServer((request, response) => {
 			let location = request.url
 			this.database = database;
-			let args = location.split('?')[1]
+			let args = {}
+			let tmp_args = location.split('?')[1]
 			location = location.split('?')[0]
-			if (args != undefined) {
-				args = args.split('&')
+			if (tmp_args != undefined) {
+				tmp_args = tmp_args.split('&')
+
+				tmp_args.forEach(element => {
+					let splited = element.split('=')
+					args[splited[0]] = splited[1]
+				});
 			}
+
 			console.log(location)
 			if (location == "/assigments") {
 				console.log(args)
@@ -27,7 +35,8 @@ class Server {
 		}).listen(port);
 	}
 	sendAssigments = (response, args) => {
-		let promise = this.database.getAllAssigments()
+		let params = {}
+		let promise = this.database.getAssigments(args)
 		promise.then((assig_objs) => {
 			response.write(JSON.stringify(assig_objs))
 			response.end()
@@ -52,8 +61,13 @@ class Server {
 		req.on('end', () => {
 			try {
 				let obj = JSON.parse(post)
-				this.database.addAssigment(obj)
-				res.end("sucess")
+				if (this.database.addAssigment(obj)) {
+					res.end(JSON.stringify(true))
+
+				}
+				else {
+					res.end(JSON.stringify(false))
+				}
 
 			} catch (err) {
 				console.log(err)
