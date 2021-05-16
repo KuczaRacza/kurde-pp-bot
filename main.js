@@ -6,18 +6,63 @@ const DicordToken = require("./token.json")
 const { randomInt } = require('node:crypto');
 const db_lib = require("./databse")
 const WWWServer = require("./website")
-
+const lessonTime = require('./lessons_start.json')
 
 const database = new db_lib.DatabaseApp()
 const server = new WWWServer.HttpServer()
+function sendPlanMessage(time, nexttime) {
+	client.channels.fetch(Config.lesson_plan_channel).then((channel) => {
+		let presence = new Discord.MessageEmbed();
+		let date = new Date()
+		database.getLessons(date.getDay(), time).then((res) => {
+			database.getLessons(date.getDay(), nexttime).then((nextres) => {
+				if (res.hour != undefined) {
+					presence.setTitle(res.hour + "  " + res.subject + "  sala " + res.room);
+					presence.setColor("#FF0000")
+					if (nextres.hour != undefined) {
+						presence.addField(nextres.hour + "  " + nextres.subject + "  " + nextres.room, "PP-kurde-bot")
+					}
+					if(Config.lesson_add_images.length>0){
+						let img = Config.lesson_add_images[randomInt(Config.lesson_add_images.length)]
+						presence.setImage(Config.lesson_images_url_prefix + img)
+					}
+					channel.send(presence)
 
+				}
+
+
+			})
+		})
+	})
+}
+function surprise(cb) {
+	(function loop() {
+		var now = new Date();
+		lessonTime.lessons.forEach((element, i) => {
+			let time = element.split(':')
+			let minute = time[1]
+			let hour = time[0]
+
+			let minutes_now = now.getHours() * 60 + now.getMinutes();
+			let minutes = Number(hour) * 60 + Number(minute) - 5
+			if (minutes_now == minutes) {
+				sendPlanMessage(element, lessonTime.lessons[i + 1])
+			}
+
+		})
+		now = new Date();
+		var delay = 60000 - (now % 60000);
+		setTimeout(loop, delay);
+	})();
+}
 function play_sounds(connection, link) {
 	const stream = ytdl(link, { filter: 'audioonly' });
 	const dispatcher = connection.play(stream)
 }
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
-	server.start(43400,database)
+	server.start(43400, database)
+	surprise(sendPlanMessage)
 
 
 });

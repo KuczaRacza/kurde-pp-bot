@@ -64,9 +64,9 @@ class Database {
 				stm = this.database.prepare("SELECT * FROM assigments WHERE subclass  = ? ")
 				stm.run(params.group)
 			}
-			else{
+			else {
 				stm = this.database.prepare("SELECT * FROM assigments WHERE aubclass = ? AND subject  = ? ")
-				stm.run(params.group,params.subject)
+				stm.run(params.group, params.subject)
 			}
 			console.log(params)
 		}
@@ -88,6 +88,21 @@ class Database {
 		return promis
 
 
+	}
+	getLessons(day, time) {
+		let stm = this.database.prepare("SELECT * FROM lessons WHERE hour = ? AND day = ?  ")
+		stm.run(time,day)
+		let promise = new Promise((resolve, reject) => {
+			let obj = {}
+			stm.each((err, row) => {
+				if (err) {
+					console.log(err)
+				}
+				obj = row
+			
+			},(err,num) => { resolve(obj) })
+		})
+		return promise
 	}
 }
 module.exports.DatabaseApp = Database;

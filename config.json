@@ -1,3 +1,13 @@
 {
-	"emojify":[":smile:", ":sweat_drops:", ":peach: :eggplant:", ":upside_down:"]
+	"emojify": [
+		":smile:",
+		":sweat_drops:",
+		":peach: :eggplant:",
+		":upside_down:"
+	],
+	"lesson_plan_channel": "843617448225538048",
+	"lesson_images_url_prefix":"https://kuczaracza.com/kurde-pp/",
+	"lesson_add_images": [
+
+	]
 }
