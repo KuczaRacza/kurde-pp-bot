@@ -31,6 +31,14 @@ class Server {
 			else if (location == "/assigmentadd" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
 			}
+			else if (location == "/assigment"){
+				this.writeSucessHeader(response,args,this.writeAssigmentPage)
+			}
+			else{
+				response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")
+				response.writeHead(404,{'Access-Control-Allow-Origin': '*','Content-Type': 'text/plain'})
+				response.end();
+			}
 
 		}).listen(port);
 	}
@@ -72,6 +80,12 @@ class Server {
 			} catch (err) {
 				console.log(err)
 			}
+		})
+	}
+	writeAssigmentPage = (res,args)=>{
+		this.database.getAssigments(args).then((obj)=>{
+			res.write(JSON.stringify(obj))
+			res.end();
 		})
 	}
 }

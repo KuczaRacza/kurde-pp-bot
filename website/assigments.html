@@ -9,16 +9,19 @@
 </head>
 
 <body onload="GetAssigments(); start()">
-	<h1>Zadania</h1>
-	<select id="amt-subject" onchange="GetAssigments()">
-		<option name='*'>*</option>
-	</select>
-	<select id='amt-group' onchange="GetAssigments()">
-		<option name='*'>*</option>
-	</select>
-	<div id='main'>
-		<div id='assigments'>
+	<div id="menu"><a href="/"><div>Kurde PP</div></a> <a  href="/add.html"><div>Add</div></a></div>
+	<div id="main">
+		<h1>Zadania</h1>
+		<select id="amt-subject" onchange="GetAssigments()">
+			<option name='*'>*</option>
+		</select>
+		<select id='amt-group' onchange="GetAssigments()">
+			<option name='*'>*</option>
+		</select>
+		<div id='main'>
+			<div id='assigments'>
 
+			</div>
 		</div>
 	</div>
 </body>

@@ -18,7 +18,7 @@ function GetAssigments() {
 }
 function createSection(assigmentsObject) {
 	let space = document.getElementById('assigments')
-	space.innerHTML =""
+	space.innerHTML = ""
 	assigmentsObject.forEach((element, i) => {
 
 		let days = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela']
@@ -38,7 +38,7 @@ function createSection(assigmentsObject) {
 		let day = (date.getDate().toString().length == 1) ? "0" + date.getDate().toString() : date.getDate().toString()
 		due.innerText = days[date.getDay()] + "   " + day + "  " + month[date.getMonth()]
 		let link = document.createElement('a')
-		link.href = "127.0.0.1:8080/assigment/" + element.aid
+		link.href = "task.html?aid=" + element.aid
 		link.append(assigment)
 		assigment.append(title)
 		assigment.append(subject)

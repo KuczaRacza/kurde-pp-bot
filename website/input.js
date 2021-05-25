@@ -39,13 +39,14 @@ function getInput() {
 	}
 	assigment.description = document.getElementById('amt-description').value
 	if (assigment.description.length < limits['description-min']) {
-		errDiv.innerText += "opis  może mieć najwięcej " + limits['description-max'] + " znaków\n";
+		errDiv.innerText += "opis musi mieć conajmniej" + limits['description-min'] + " znaków\n";
+
 		ok = false
 	} else if (assigment.description.length > limits['description-max']) {
-		errDiv.innerText += "opis musi mieć conajmniej" + limits['description-min'] + " znaków\n";
+		errDiv.innerText += "opis  może mieć najwięcej " + limits['description-max'] + " znaków\n";
 		ok = false
 	}
-	assigment.due = new Date(document.getElementById('amt-due').value).getTime()
+	assigment.due =  new Date(document.getElementById('amt-due').value).getTime()
 	assigment.subject = document.getElementById('amt-subject').value
 	assigment.group = document.getElementById('amt-group').value
 	if (assigment.due <= 0 || assigment.due == undefined || assigment.due == NaN || assigment.due == null) {

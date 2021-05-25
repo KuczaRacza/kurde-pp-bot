@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-	</head>
-	<body onload="start()">
-		<script src="input.js"></script>
-		<div id="main">
-			<div id="center">
-				<div id="inputs">
-					<input type="text" placeholder="nazwa zadania" id="amt-title">
-					<input type="text" placeholder="opis zadania" id="amt-description">
-					<input type="date" id="amt-due">
-					<select id="amt-group">
-					</select>
-					<select id="amt-subject">
-					</select>
-					<input type="button" value="dodaj" onclick="getInput()">
-					<div id="amt-error"></div>
-				</div>
+
+<head>
+	<meta charset="utf-8">
+</head>
+
+<body onload="start()">
+	<script src="input.js"></script>
+	<div id="main">
+		<div id="menu"><a href="/">
+				<div>kurde PP bot</div>
+			</a></div>
+		<div id="center">
+			<div id="inputs">
+				<input type="text" placeholder="nazwa zadania" id="amt-title">
+				<input type="text" placeholder="opis zadania" id="amt-description">
+				<input type="date" id="amt-due">
+				<select id="amt-group">
+				</select>
+				<select id="amt-subject">
+				</select>
+				<input type="button" value="dodaj" onclick="getInput()">
+				<div id="amt-error"></div>
 			</div>
 		</div>
-	</body>
+	</div>
+</body>
+
 </html>

@@ -8,7 +8,7 @@ class Database {
 		this.database.run("CREATE TABLE IF NOT EXISTS messages(author VARCHAR,content VARCHAR,atachments VARCHAR, snowflake VARCHAR, channel VARCHAR )", (err) => {
 			if (err) { console.log(err) }
 		})
-		this.database.run("CREATE TABLE IF NOT EXISTS assigments(subclass VARCHAR,subject VARCHAR,title VARCHAR,description VARCHAR, due INT, userid INT, created INT,aid VARCHAR )", (err) => {
+		this.database.run("CREATE TABLE IF NOT EXISTS assigments(subclass VARCHAR,subject VARCHAR,title VARCHAR,description VARCHAR, due INT, userid INT, created INT,aid VARCHAR , files VARCHAR)", (err) => {
 			if (err) { console.log(err) }
 		})
 	}
@@ -54,8 +54,12 @@ class Database {
 			stm.run()
 		}
 		else {
+			if (params.aid !=  undefined){
+				stm = this.database.prepare("SELECT * FROM assigments WHERE aid  = ? ")
+				stm.run(params.aid)
 
-			if (params.group == 'all' || params.group == undefined) {
+			}
+			else if (params.group == 'all' || params.group == undefined) {
 				stm = this.database.prepare("SELECT * FROM assigments WHERE subject  = ? ")
 				stm.run(params.subject)
 
@@ -65,7 +69,7 @@ class Database {
 				stm.run(params.group)
 			}
 			else {
-				stm = this.database.prepare("SELECT * FROM assigments WHERE aubclass = ? AND subject  = ? ")
+				stm = this.database.prepare("SELECT * FROM assigments WHERE subclass = ? AND subject  = ? ")
 				stm.run(params.group, params.subject)
 			}
 			console.log(params)
