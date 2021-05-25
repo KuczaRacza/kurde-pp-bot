@@ -1,28 +1,22 @@
 function GetAssigments() {
+	let params = {}
 	let gr = document.getElementById('amt-group').value
-	let sb = document.getElementById('amt-subject').value
-	if (gr == "*") {
-		gr = 'all'
-	} if (sb == "*") {
-		sb = 'all'
+	if (gr != '*') {
+		params.group = gr
 	}
-	let assigmetsRquest = fetch("http://127.0.0.1:43400/assigments?group=" + gr + "&subject=" + sb, { mode: 'cors' })
-	assigmetsRquest.then((res) => {
-		if (res.ok) {
-			res.text().then(responseText => {
-				let obj = JSON.parse(responseText)
-				createSection(obj)
-			})
-		}
-	})
+	let sb = document.getElementById('amt-subject').value
+	if(sb != "*"){
+		params.subject =sb
+	}
+
+
+	APIgetAssigments(params).then(createSection)
 }
 function createSection(assigmentsObject) {
 	let space = document.getElementById('assigments')
 	space.innerHTML = ""
 	assigmentsObject.forEach((element, i) => {
 
-		let days = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela']
-		let month = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień']
 
 
 		let assigment = document.createElement('div')
@@ -35,8 +29,7 @@ function createSection(assigmentsObject) {
 		let date = new Date(element.due);
 		subject.innerText = element.subject;
 
-		let day = (date.getDate().toString().length == 1) ? "0" + date.getDate().toString() : date.getDate().toString()
-		due.innerText = days[date.getDay()] + "   " + day + "  " + month[date.getMonth()]
+		due.innerText = date.toDateString()
 		let link = document.createElement('a')
 		link.href = "task.html?aid=" + element.aid
 		link.append(assigment)

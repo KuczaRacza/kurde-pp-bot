@@ -31,7 +31,7 @@ class Database {
 
 		if (tilte.length < assigmentsConfig['description-max'] && description.length < assigmentsConfig['description-max']
 			&& tilte.length > assigmentsConfig['title-min'] && description.length > assigmentsConfig['description-min']
-			&& due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(group)
+			&& due != undefined && Number(due) != NaN && due > 0 && assigmentsConfig.groups.includes(group)
 			&& assigmentsConfig.subjects.includes(subject)) {
 			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due,userid,created,aid) VALUES (?,?,?,?,?,?,?,?)")
 			let randomstring = ""
@@ -48,32 +48,47 @@ class Database {
 		}
 	}
 	getAssigments(params) {
-		let stm
-		if (params.subject == 'all' && params.group == 'all') {
-			stm = this.database.prepare("SELECT * FROM assigments")
-			stm.run()
-		}
-		else {
-			if (params.aid !=  undefined){
-				stm = this.database.prepare("SELECT * FROM assigments WHERE aid  = ? ")
-				stm.run(params.aid)
 
-			}
-			else if (params.group == 'all' || params.group == undefined) {
-				stm = this.database.prepare("SELECT * FROM assigments WHERE subject  = ? ")
-				stm.run(params.subject)
 
-			}
-			else if (params.subject == 'all' || params.subject == undefined) {
-				stm = this.database.prepare("SELECT * FROM assigments WHERE subclass  = ? ")
-				stm.run(params.group)
-			}
-			else {
-				stm = this.database.prepare("SELECT * FROM assigments WHERE subclass = ? AND subject  = ? ")
-				stm.run(params.group, params.subject)
-			}
-			console.log(params)
+
+		let sql = "SELECT * FROM assigments WHERE "
+		if (params.group != undefined) {
+			sql += "subclass = ? AND "
 		}
+		if (params.subject != undefined) {
+			sql += "subject = ? AND "
+		}
+		if (params.due != undefined && Number(params.due) != NaN) {
+			sql += "due >= ? AND "
+		}
+		if (params.aid != undefined) {
+			sql += "aid = ? AND "
+		}
+		if(sql.includes('AND')){
+			sql = sql.substr(0,sql.length-5)
+		}
+		else{
+			sql = sql.substr(0,sql.length-7)
+		}
+		let stm = this.database.prepare(sql)
+		let bindings = []
+		if (params.group != undefined) {
+			bindings.push(params.group)
+		}
+		if (params.subject != undefined) {
+			bindings.push(params.subject)
+		}
+		if (params.due != undefined) {
+			bindings.push(params.due)
+		}
+		if (params.aid != undefined) {
+			bindings.push(params.aid)
+		}
+		console.log(bindings)
+		stm.run(bindings)
+		console.log(sql)
+
+
 
 		let promis = new Promise((resolve, reject) => {
 			let assigs = []
@@ -84,6 +99,9 @@ class Database {
 
 				assigs.push(row)
 			}, (err, num) => {
+				if(err){
+					console.log(err)
+				}
 				resolve(assigs)
 			})
 			stm.finalize()
@@ -95,7 +113,7 @@ class Database {
 	}
 	getLessons(day, time) {
 		let stm = this.database.prepare("SELECT * FROM lessons WHERE hour = ? AND day = ?  ")
-		stm.run(time,day)
+		stm.run(time, day)
 		let promise = new Promise((resolve, reject) => {
 			let obj = {}
 			stm.each((err, row) => {
@@ -103,8 +121,8 @@ class Database {
 					console.log(err)
 				}
 				obj = row
-			
-			},(err,num) => { resolve(obj) })
+
+			}, (err, num) => { resolve(obj) })
 		})
 		return promise
 	}
