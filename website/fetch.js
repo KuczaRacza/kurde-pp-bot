@@ -8,8 +8,10 @@ function GetAssigments() {
 	if(sb != "*"){
 		params.subject =sb
 	}
-
-
+	let active =document.getElementById("amt-due").checked
+	if(active){
+		params.due = new Date().getTime()
+	}
 	APIgetAssigments(params).then(createSection)
 }
 function createSection(assigmentsObject) {

@@ -10,7 +10,11 @@
 </head>
 
 <body onload="GetAssigments(); start()">
-	<div id="menu"><a href="/"><div>Kurde PP</div></a> <a  href="/add.html"><div>Add</div></a></div>
+	<div id="menu"><a href="/">
+			<div>Kurde PP</div>
+		</a> <a href="/add.html">
+			<div>Add</div>
+		</a></div>
 	<div id="main">
 		<h1>Zadania</h1>
 		<select id="amt-subject" onchange="GetAssigments()">
@@ -19,6 +23,7 @@
 		<select id='amt-group' onchange="GetAssigments()">
 			<option name='*'>*</option>
 		</select>
+		<div><input id="amt-due" type="checkbox" onchange="GetAssigments()">Tylko aktualne</div>
 		<div id='main'>
 			<div id='assigments'>
 

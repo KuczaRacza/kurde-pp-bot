@@ -1,6 +1,7 @@
 const { AssertionError } = require('assert');
 
 const http = require('http');
+const fs = require('fs')
 const dbApp = require('./databse')
 class Server {
 	constructor() {
@@ -23,15 +24,13 @@ class Server {
 				});
 			}
 
-			console.log(location)
-			if (location == "/assigments") {
-				console.log(args)
+			if (location == "/api/assigments") {
 				this.writeSucessHeader(response, args, this.sendAssigments)
 			}
-			else if (location == "/assigmentadd" && request.method == "POST") {
+			else if (location == "/api/assigmentadd" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
 			}
-			else if (location == "/assigment"){
+			else if (location == "/api/assigment"){
 				this.writeSucessHeader(response,args,this.writeAssigmentPage)
 			}
 			else{
@@ -39,6 +38,14 @@ class Server {
 				response.writeHead(404,{'Access-Control-Allow-Origin': '*','Content-Type': 'text/plain'})
 				response.end();
 			}
+			let user_agent =""
+			request.rawHeaders.forEach((element ,i )=>{
+				if(element == "User-Agent"){
+					user_agent = request.rawHeaders[i+1] 
+				}
+			})
+			let log =  new Date().toDateString() + "  " + request.method + " " +location + " "+user_agent+"\n";  
+			fs.appendFile("./acess.log",log,()=>{})
 
 		}).listen(port);
 	}
@@ -71,6 +78,8 @@ class Server {
 				let obj = JSON.parse(post)
 				if (this.database.addAssigment(obj)) {
 					res.end(JSON.stringify(true))
+					this.onAssigmentAddCB(obj)
+
 
 				}
 				else {
@@ -88,5 +97,6 @@ class Server {
 			res.end();
 		})
 	}
+	
 }
 module.exports.HttpServer = Server;

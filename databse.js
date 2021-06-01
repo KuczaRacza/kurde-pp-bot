@@ -29,9 +29,9 @@ class Database {
 		let subject = assigmentObj.subject;
 		let group = assigmentObj.group;
 
-		if (tilte.length < assigmentsConfig['description-max'] && description.length < assigmentsConfig['description-max']
+		if (tilte.length < assigmentsConfig['title-max'] && description.length < assigmentsConfig['description-max']
 			&& tilte.length > assigmentsConfig['title-min'] && description.length > assigmentsConfig['description-min']
-			&& due != undefined && Number(due) != NaN && due > 0 && assigmentsConfig.groups.includes(group)
+			&& due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(group)
 			&& assigmentsConfig.subjects.includes(subject)) {
 			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due,userid,created,aid) VALUES (?,?,?,?,?,?,?,?)")
 			let randomstring = ""
@@ -70,6 +70,7 @@ class Database {
 		else{
 			sql = sql.substr(0,sql.length-7)
 		}
+		sql += " ORDER BY due ASC"
 		let stm = this.database.prepare(sql)
 		let bindings = []
 		if (params.group != undefined) {
@@ -84,9 +85,7 @@ class Database {
 		if (params.aid != undefined) {
 			bindings.push(params.aid)
 		}
-		console.log(bindings)
 		stm.run(bindings)
-		console.log(sql)
 
 
 

@@ -10,6 +10,15 @@ const lessonTime = require('./lessons_start.json')
 
 const database = new db_lib.DatabaseApp()
 const server = new WWWServer.HttpServer()
+let assigmentToEmbed = (assigment) => {
+	let presece = new Discord.MessageEmbed()
+	presece.title = assigment.title.substr(0, 40)
+	presece.description = assigment.description.substr(0, 80)
+	presece.addField("Termin:", new Date(assigment.due).toDateString(), true)
+	presece.addField("Przedmiot:", assigment.subject, true)
+	presece.addField("Grupa:", assigment.group, true)
+	return presece
+}
 function sendPlanMessage(time, nexttime) {
 	client.channels.fetch(Config.lesson_plan_channel).then((channel) => {
 		let presence = new Discord.MessageEmbed();
@@ -22,7 +31,7 @@ function sendPlanMessage(time, nexttime) {
 					if (nextres.hour != undefined) {
 						presence.addField(nextres.hour + "  " + nextres.subject + "  " + nextres.room, "PP-kurde-bot")
 					}
-					if(Config.lesson_add_images.length>0){
+					if (Config.lesson_add_images.length > 0) {
 						let img = Config.lesson_add_images[randomInt(Config.lesson_add_images.length)]
 						presence.setImage(Config.lesson_images_url_prefix + img)
 					}
@@ -34,6 +43,27 @@ function sendPlanMessage(time, nexttime) {
 			})
 		})
 	})
+}
+let sendReminder = () => {
+	let now = new Date();
+	database.getAssigments({ due: now.getTime() }).then((assigs) => {
+		client.channels.fetch(Config.assigments_channel).then((chann) => {
+			assigs.forEach((element) => {
+				element.group = element.subclass
+				let dueDate = new Date(element.due)
+				let timeTo =dueDate.getTime() - now.getTime();
+				if (timeTo<172800) {
+					console.log(timeTo)
+					let embed = assigmentToEmbed(element)
+					embed.addField("WAŻNE TERMIN DO", new Date(element.due).toDateString())
+					embed.setColor("#FF0000")
+					chann.send(embed)
+
+				}
+			})
+		})
+	})
+
 }
 function surprise(cb) {
 	(function loop() {
@@ -48,7 +78,9 @@ function surprise(cb) {
 			if (minutes_now == minutes) {
 				sendPlanMessage(element, lessonTime.lessons[i + 1])
 			}
-
+			if (/*now.getHours() == 17*/ true) {
+				sendReminder()
+			}
 		})
 		now = new Date();
 		var delay = 60000 - (now % 60000);
@@ -63,9 +95,15 @@ client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 	server.start(43400, database)
 	surprise(sendPlanMessage)
+	server.onAssigmentAddCB = sendNewAssigments;
 
 
 });
+let sendNewAssigments = (assigment) => {
+	client.channels.fetch(Config.assigments_channel).then((chann) => {
+		chann.send(assigmentToEmbed(assigment))
+	})
+}
 function rickroll() {
 	const channel = client.channels.fetch("842510549668986924")
 	channel.then((chann) => {

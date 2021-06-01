@@ -14,7 +14,7 @@ let setHttpParams = (endpoint, params) => {
 }
 let APIgetAssigments = (params) => {
     let prm = new Promise((cb, err) => {
-        let ftch = fetch(setHttpParams("http://127.0.0.1:43400/assigment", params), { mode: "cors" }).then((res) => {
+        fetch(setHttpParams("http://127.0.0.1/api/assigment", params)).then((res) => {
             res.json().then((obj) => {
                 cb(obj)
             })

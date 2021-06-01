@@ -1,6 +1,6 @@
 var limits = {}
 function start() {
-	limits = fetch("http://127.0.0.1:8080/limits.json").then((res) => {
+	limits = fetch("./limits.json").then((res) => {
 		if (res.ok) {
 			res.json().then((obj => {
 				limits = obj
@@ -57,7 +57,7 @@ function getInput() {
 		addAssigment(assigment).then((res) => {
 			res.json().then((obj) => {
 				if (obj === true) {
-					window.location = 'http://127.0.0.1:8080/'
+					window.location = '/'
 				}
 				else {
 					errDiv.innerText = " wystąpił błąd przy dodaniu"
@@ -67,6 +67,6 @@ function getInput() {
 	}
 }
 function addAssigment(asigment) {
-	let assigmetsRquest = fetch("http://127.0.0.1:43400/assigmentadd", { method: 'POST', mode: 'cors', body: JSON.stringify(asigment) })
+	let assigmetsRquest = fetch("http://localhost/api/assigmentadd", { method: 'POST', mode: 'cors', body: JSON.stringify(asigment) })
 	return assigmetsRquest;
 }

@@ -5,7 +5,9 @@ let createPage = (array) => {
     let obj = array[0]
     document.getElementById("task-title").innerText = obj.title
     document.getElementById("task-description").innerText = obj.description
-    document.getElementById("task-due").innerText = new Date(obj.due).toDateString()
+    document.getElementById("task-due").innerText ="Termin: "+ new Date(obj.due).toDateString()
+    document.getElementById("task-created").innerText = "Dodano:" +new Date(obj.created).toDateString();
+    document.getElementById("task-subject").innerText = "Przedmiot: " + obj.subject
 
 }
 let dashboardTasks = () => {
