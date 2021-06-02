@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<script src="./common.js"></script>
+	<script src="./nologin.js"></script>
+	<script src="./login.js"></script>
+</head>
+
+<body onload="isNotLoged()">
+	<form>
+		<div>
+			nick
+			<input type="text" id="reg-nick">
+		</div>
+		<div>
+			discord tag
+			<input type="text" id="reg-tag">
+		</div>
+		<div>
+			hasło
+			<input type="text" id="reg-passwd">
+		</div>
+		<div>
+			<input value="ok" type="button" id="reg-ok" onclick="register_form()">
+		</div>
+	</form>
+</body>
+
+</html>

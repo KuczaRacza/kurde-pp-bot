@@ -1,6 +1,10 @@
 let isLoged = () => {
-    if (window.sessionStorage.getItem("token") == null) {
-        window.location = "./login.html"
-    }
+	if (window.sessionStorage.getItem("token") == null) {
+		window.location = "./login.html"
+	}
 }
-document.addEventListener('loadstart',isLogged)
+let isNotLoged = () => {
+	if (window.sessionStorage.getItem("token") != null) {
+		window.location = "./account.html"
+	}
+}

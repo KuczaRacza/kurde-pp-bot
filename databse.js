@@ -128,21 +128,25 @@ class Database {
 		})
 		return promise
 	}
-	getUsers = (paramas) => {
-		let  bindings = []
+	getUsers = (params) => {
+		let bindings = []
 		let sql = "SELECT * FROM users WHERE "
-		if (paramas.uid != undefined) {
+		if (params.uid != undefined) {
 			sql += " uid = ? AND "
-			bindings.push(paramas.uid)
+			bindings.push(params.uid)
 		}
-		if (paramas.discord != undefined) {
+		if (params.discord != undefined) {
 			sql += " discord = ? AND "
-			bindings.push(paramas.discord)
+			bindings.push(params.discord)
 		}
-		if (paramas.token != undefined) {
+		if (params.token != undefined) {
 			sql += " token = ? AND "
-			bindings.push(paramas.token)
+			bindings.push(params.token)
 
+		}
+		if (params.nick != undefined) {
+			sql += "nick = ? AND "
+			bindings.push(params.nick)
 		}
 		if (sql.includes('AND')) {
 			sql = sql.substr(0, sql.length - 5)
@@ -151,14 +155,25 @@ class Database {
 			sql = sql.substr(0, sql.length - 7)
 		}
 		let stm = this.database.prepare(sql)
-		stm.bind(paramas)
+		stm.bind(bindings)
+		stm.run()
+		let promise = new Promise((resolve, reject) => {
+			stm.each((err, row) => {
+				if (err) {
+					console.log(err)
+				}
+				resolve(row)
+			})
+
+		})
 
 	}
 	addUser = (user) => {
-		let sql = "INSERT INTO users (uid,nick,created,password,token,salt) VALUES(?,?,?,?,?,?)"
+		let sql = "INSERT INTO users (uid,nick,created,password,token,salt,discord) VALUES(?,?,?,?,?,?,?)"
 		let stm = this.database.prepare(sql);
-		stm.bind(user.uid, user.nick, user.created, user.password, user.token, user.salt)
+		stm.bind(user.uid, user.nick, user.created, user.password, user.token, user.salt,user.discord)
 		stm.run()
+		stm.finalize()
 	}
 }
 module.exports.DatabaseApp = Database;

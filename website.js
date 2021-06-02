@@ -3,6 +3,7 @@ const { AssertionError } = require('assert');
 const http = require('http');
 const fs = require('fs')
 const dbApp = require('./databse')
+const users = require('./users')
 class Server {
 	constructor() {
 		console.log("crating server")
@@ -12,6 +13,7 @@ class Server {
 		http.createServer((request, response) => {
 			let location = request.url
 			this.database = database;
+			this.usr = new users.Session(this.database);
 			let args = {}
 			let tmp_args = location.split('?')[1]
 			location = location.split('?')[0]
@@ -30,22 +32,25 @@ class Server {
 			else if (location == "/api/assigmentadd" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
 			}
-			else if (location == "/api/assigment"){
-				this.writeSucessHeader(response,args,this.writeAssigmentPage)
+			else if (location == "/api/assigment") {
+				this.writeSucessHeader(response, args, this.writeAssigmentPage)
 			}
-			else{
+			else if (location = "/api/adduser" && request.method == "POST") {
+				this.writeSucessHeader(response, args, (res, args) => { this.usr.addUser(request, res) })
+			}
+			else {
 				response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")
-				response.writeHead(404,{'Access-Control-Allow-Origin': '*','Content-Type': 'text/plain'})
+				response.writeHead(404, { 'Content-Type': 'text/plain' })
 				response.end();
 			}
-			let user_agent =""
-			request.rawHeaders.forEach((element ,i )=>{
-				if(element == "User-Agent"){
-					user_agent = request.rawHeaders[i+1] 
+			let user_agent = ""
+			request.rawHeaders.forEach((element, i) => {
+				if (element == "User-Agent") {
+					user_agent = request.rawHeaders[i + 1]
 				}
 			})
-			let log =  new Date().toDateString() + "  " + request.method + " " +location + " "+user_agent+"\n";  
-			fs.appendFile("./acess.log",log,()=>{})
+			let log = new Date().toDateString() + "  " + request.method + " " + location + " " + user_agent + "\n";
+			fs.appendFile("./acess.log", log, () => { })
 
 		}).listen(port);
 	}
@@ -63,7 +68,6 @@ class Server {
 	writeSucessHeader = (response, args, callback) => {
 		response.writeHead(200, {
 			'Content-Type': 'text/json',
-			'Access-Control-Allow-Origin': '*'
 		});
 		callback(response, args)
 	}
@@ -91,12 +95,12 @@ class Server {
 			}
 		})
 	}
-	writeAssigmentPage = (res,args)=>{
-		this.database.getAssigments(args).then((obj)=>{
+	writeAssigmentPage = (res, args) => {
+		this.database.getAssigments(args).then((obj) => {
 			res.write(JSON.stringify(obj))
 			res.end();
 		})
 	}
-	
+
 }
 module.exports.HttpServer = Server;
