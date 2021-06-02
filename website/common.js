@@ -14,11 +14,15 @@ let setHttpParams = (endpoint, params) => {
 }
 let APIgetAssigments = (params) => {
     let prm = new Promise((cb, err) => {
-        fetch(setHttpParams("http://127.0.0.1/api/assigment", params)).then((res) => {
+        fetch(setHttpParams("http://localhost/api/assigment", params), { method: 'GET', headers: { "auth": window.sessionStorage.getItem("token") } }).then((res) => {
             res.json().then((obj) => {
                 cb(obj)
             })
         })
     })
     return prm
+}
+let APIaddAssigment = (asigment) => {
+    let assigmetsRquest = fetch("http://localhost/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": window.sessionStorage.getItem("token") } })
+    return assigmetsRquest;
 }

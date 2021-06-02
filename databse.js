@@ -11,6 +11,9 @@ class Database {
 		this.database.run("CREATE TABLE IF NOT EXISTS assigments(subclass VARCHAR,subject VARCHAR,title VARCHAR,description VARCHAR, due INT, userid INT, created INT,aid VARCHAR , files VARCHAR)", (err) => {
 			if (err) { console.log(err) }
 		})
+		this.database.run("CREATE TABLE IF NOT EXISTS users(uid TEXT, created INT, name TEXT, discord TEXT, password TEXT , salt TEXT, last_login INT, token TEXT)", (err) => {
+			if (err) { console.log(err) }
+		})
 	}
 	savemessage(msg) {
 		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake,channel) VALUES (?,?,?,?,?)");
@@ -64,11 +67,11 @@ class Database {
 		if (params.aid != undefined) {
 			sql += "aid = ? AND "
 		}
-		if(sql.includes('AND')){
-			sql = sql.substr(0,sql.length-5)
+		if (sql.includes('AND')) {
+			sql = sql.substr(0, sql.length - 5)
 		}
-		else{
-			sql = sql.substr(0,sql.length-7)
+		else {
+			sql = sql.substr(0, sql.length - 7)
 		}
 		sql += " ORDER BY due ASC"
 		let stm = this.database.prepare(sql)
@@ -98,7 +101,7 @@ class Database {
 
 				assigs.push(row)
 			}, (err, num) => {
-				if(err){
+				if (err) {
 					console.log(err)
 				}
 				resolve(assigs)
@@ -124,6 +127,38 @@ class Database {
 			}, (err, num) => { resolve(obj) })
 		})
 		return promise
+	}
+	getUsers = (paramas) => {
+		let  bindings = []
+		let sql = "SELECT * FROM users WHERE "
+		if (paramas.uid != undefined) {
+			sql += " uid = ? AND "
+			bindings.push(paramas.uid)
+		}
+		if (paramas.discord != undefined) {
+			sql += " discord = ? AND "
+			bindings.push(paramas.discord)
+		}
+		if (paramas.token != undefined) {
+			sql += " token = ? AND "
+			bindings.push(paramas.token)
+
+		}
+		if (sql.includes('AND')) {
+			sql = sql.substr(0, sql.length - 5)
+		}
+		else {
+			sql = sql.substr(0, sql.length - 7)
+		}
+		let stm = this.database.prepare(sql)
+		stm.bind(paramas)
+
+	}
+	addUser = (user) => {
+		let sql = "INSERT INTO users (uid,nick,created,password,token,salt) VALUES(?,?,?,?,?,?)"
+		let stm = this.database.prepare(sql);
+		stm.bind(user.uid, user.nick, user.created, user.password, user.token, user.salt)
+		stm.run()
 	}
 }
 module.exports.DatabaseApp = Database;
