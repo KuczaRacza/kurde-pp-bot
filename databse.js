@@ -128,7 +128,7 @@ class Database {
 		})
 		return promise
 	}
-	getUsers = (params) => {
+	getUser = (params) => {
 		let bindings = []
 		let sql = "SELECT * FROM users WHERE "
 		if (params.uid != undefined) {
@@ -157,21 +157,29 @@ class Database {
 		let stm = this.database.prepare(sql)
 		stm.bind(bindings)
 		stm.run()
+		console.log(sql)
+		console.log(bindings)
 		let promise = new Promise((resolve, reject) => {
 			stm.each((err, row) => {
 				if (err) {
 					console.log(err)
 				}
+				
 				resolve(row)
+			}, (err, rows) => {
+				if(rows == 0 ){
+					resolve({})
+				}
 			})
 
 		})
+		return promise
 
 	}
 	addUser = (user) => {
-		let sql = "INSERT INTO users (uid,nick,created,password,token,salt,discord) VALUES(?,?,?,?,?,?,?)"
+		let sql = "INSERT INTO users (uid,nick,created,password,token,salt,discord,status) VALUES(?,?,?,?,?,?,?,0)"
 		let stm = this.database.prepare(sql);
-		stm.bind(user.uid, user.nick, user.created, user.password, user.token, user.salt,user.discord)
+		stm.bind(user.uid, user.nick, user.created, user.password, user.token, user.salt, user.discord)
 		stm.run()
 		stm.finalize()
 	}

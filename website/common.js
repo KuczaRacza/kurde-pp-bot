@@ -1,3 +1,12 @@
+let cookie = {}
+let getCookie = () => {
+	if (document.cookie.length > 0) {
+		cookie = JSON.parse(document.cookie)
+	}
+}
+let writeCookie = () => {
+	document.cookie = JSON.stringify(cookie)
+}
 let setHttpParams = (endpoint, params) => {
 	let url = endpoint;
 	Object.keys(params).forEach(key => {
@@ -14,7 +23,7 @@ let setHttpParams = (endpoint, params) => {
 }
 let APIgetAssigments = (params) => {
 	let prm = new Promise((cb, err) => {
-		fetch(setHttpParams("http://localhost/api/assigment", params), { method: 'GET', headers: { "auth": window.sessionStorage.getItem("token") } }).then((res) => {
+		fetch(setHttpParams("http://localhost/api/assigment", params), { method: 'GET', headers: { "auth": cookie.token } }).then((res) => {
 			res.json().then((obj) => {
 				cb(obj)
 			})
@@ -23,10 +32,14 @@ let APIgetAssigments = (params) => {
 	return prm
 }
 let APIaddAssigment = (asigment) => {
-	let assigmetsRquest = fetch("http://localhost/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": window.sessionStorage.getItem("token") } })
+	let assigmetsRquest = fetch("http://localhost/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": cookie.token } })
 	return assigmetsRquest;
 }
 let APIaddUser = (data) => {
 	let userAdd = fetch("http://localhost/api/useradd", { method: 'POST', body: JSON.stringify(data) })
 	return userAdd
+}
+let APIloginUser = (login) => {
+	let loginUser = fetch("http://localhost/api/login", { method: 'POST', body: JSON.stringify(login) })
+	return loginUser;
 }

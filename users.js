@@ -26,22 +26,33 @@ class Session {
 				let userdata = JSON.parse(post)
 				if (userdata.nick == undefined && userdata.discord == undefined && userdata.password == undefined) {
 					if (userdata.nick.length < 10 && userdata.password.length < 8) {
-						return {};
+						res.end(JSON.stringify(false))
 					}
-					return {};
+					res.end(JSON.stringify(false))
 				}
-				let user ={};
+				let params = {}
+				params.discord = userdata.discord
+				this.database.getUser(params).then((ret) => {
+					console.log(ret)
+					if (ret.discord != undefined) {
+						res.end(JSON.stringify({ token: null, added: false }))
+					}
+					else {
+						let user = {};
 
-				user.uid = this.randomString(32);
-				user.created = new Date().getTime();
-				user.nick = userdata.nick;
-				let shasum = crypto.createHash('sha1')
-				user.salt = this.randomString(8);
-				user.password = shasum.update("adsfsdf").digest('base64');
-				user.token = this.randomString(32);
-				user.discord = userdata.discord;
-				this.database.addUser(user)
-				res.end(JSON.stringify(true))
+						user.uid = this.randomString(32);
+						user.created = new Date().getTime();
+						user.nick = userdata.nick;
+						let shasum = crypto.createHash('sha1')
+						user.salt = this.randomString(8);
+						user.password = shasum.update(userdata.password + user.salt).digest('base64');
+						user.token = this.randomString(32);
+						user.discord = userdata.discord;
+						this.database.addUser(user)
+						res.end(JSON.stringify({ token: user.token, added: true }))
+					}
+				})
+
 
 			} catch (err) {
 				console.log(err)
@@ -51,20 +62,30 @@ class Session {
 
 
 	}
-	logUser(login) {
-		let pr = new Promise((resolve, reject) => {
+	logUser(request, res) {
+		let post = ""
+		request.on('data', (chunk) => {
+			post += chunk;
+		})
+		request.on('end', () => {
+			let login = JSON.parse(post)
 			if (login.discord == undefined || login.password == undefined) {
-				resolve(false)
+				res.end(JSON.stringify({ loged: false, token: null }))
 			}
-			this.database.getUser(login).then((res) => {
+			this.database.getUser({ discord: login.discord }).then((user) => {
+				console.log(user)
 				let shasum = crypto.createHash('sha1')
-				let hash = shasum.update(login.password + res.salt)
-				if (hash = res.password) {
-					resolve(res.token)
+				let hash = shasum.update(login.password + user.salt).digest('base64');
+				if (hash == user.password) {
+					res.end(JSON.stringify({ loged: true, token: user.token }))
+				}
+				else{
+					res.end(JSON.stringify({ loged: false, token: null }))
+
 				}
 			})
 		})
-		return pr
+
 	}
 
 }

@@ -35,8 +35,11 @@ class Server {
 			else if (location == "/api/assigment") {
 				this.writeSucessHeader(response, args, this.writeAssigmentPage)
 			}
-			else if (location = "/api/adduser" && request.method == "POST") {
+			else if (location == "/api/adduser" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.usr.addUser(request, res) })
+			}
+			else if (location == "/api/login" && request.method == "POST"){
+				this.writeSucessHeader(response, args, (res, args) => { this.usr.logUser(request, res) })
 			}
 			else {
 				response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")

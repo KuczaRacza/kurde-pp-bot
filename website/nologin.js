@@ -1,10 +1,13 @@
 let isLoged = () => {
-	if (window.sessionStorage.getItem("token") == null) {
-		window.location = "./login.html"
+	if (cookie.token == undefined) {
+		getCookie()
+		if (cookie.token == undefined) {
+			window.location = "./login.html#" + window.location;
+		}
 	}
 }
 let isNotLoged = () => {
-	if (window.sessionStorage.getItem("token") != null) {
+	if (cookie.token != undefined) {
 		window.location = "./account.html"
 	}
 }
