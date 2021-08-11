@@ -43,3 +43,7 @@ let APIloginUser = (login) => {
 	let loginUser = fetch("http://localhost/api/login", { method: 'POST', body: JSON.stringify(login) })
 	return loginUser;
 }
+let APImyUserInfo = () => {
+	let myUser = fetch("http://localhost/api/myaccount", { method: 'GET', headers: { "auth": cookie.token } })
+	return myUser
+}

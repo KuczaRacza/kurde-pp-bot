@@ -8,12 +8,14 @@ class Server {
 	constructor() {
 		console.log("crating server")
 	}
-	start = (port, database) => {
-		console.log("listening on port " + port)
+	start = (port, database,dscClient) => {
+
+		console.log("listening on port " + port)	
+		this.database = database;
+		this.usr = new users.Session(this.database,dscClient);
+		this.dscClient = dscClient;
 		http.createServer((request, response) => {
 			let location = request.url
-			this.database = database;
-			this.usr = new users.Session(this.database);
 			let args = {}
 			let tmp_args = location.split('?')[1]
 			location = location.split('?')[0]
@@ -35,11 +37,15 @@ class Server {
 			else if (location == "/api/assigment") {
 				this.writeSucessHeader(response, args, this.writeAssigmentPage)
 			}
-			else if (location == "/api/adduser" && request.method == "POST") {
+			else if (location == "/api/useradd" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.usr.addUser(request, res) })
 			}
 			else if (location == "/api/login" && request.method == "POST"){
 				this.writeSucessHeader(response, args, (res, args) => { this.usr.logUser(request, res) })
+			}
+			else if(location == "/api/myaccount"){
+				this.writeSucessHeader(response, request.headers.auth, this.usr.sendMyAccounInfo)
+				
 			}
 			else {
 				response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")

@@ -3,8 +3,9 @@ const { randomInt } = require('node:crypto');
 const crypto = require('node:crypto')
 const DatabaseApp = require('./databse')
 class Session {
-	constructor(db) {
+	constructor(db, dscClient) {
 		this.database = db
+		this.dscClient = dscClient
 	}
 	randomString(l) {
 		let chars = "abcdefghijklmnoperstvuqwxyz0123456789"
@@ -50,6 +51,7 @@ class Session {
 						user.discord = userdata.discord;
 						this.database.addUser(user)
 						res.end(JSON.stringify({ token: user.token, added: true }))
+						this.verifcation(user)
 					}
 				})
 
@@ -79,7 +81,7 @@ class Session {
 				if (hash == user.password) {
 					res.end(JSON.stringify({ loged: true, token: user.token }))
 				}
-				else{
+				else {
 					res.end(JSON.stringify({ loged: false, token: null }))
 
 				}
@@ -87,6 +89,33 @@ class Session {
 		})
 
 	}
-
+	verifcation = (user) => {
+		let text = this.randomString(6)
+		this.dscClient.users.fetch(user.discord).then((usr) => {
+			usr.send("Please verify your account\n enter this code " + text)
+		})
+	}
+	permission = (auth) => {
+		return new Promise((resolve, reject) => {
+			this.database.getUser({ token: auth }).then((res) => {
+				if (res != {}) {
+					resolve(false)
+				}
+				else {
+					resolve(true)
+				}
+			})
+		})
+	}
+	sendMyAccounInfo = (response,auth ) => {
+		this.database.getUser({ token: auth }).then((res) => {
+			if (res == {}) {
+				response.end(JSON.stringify({}))
+			}
+			else {
+				response.end(JSON.stringify({ nick: res.nick, discord: res.discord, status: res.status, created: res.created }))
+			}
+		})
+	}
 }
 module.exports.Session = Session;
