@@ -11,7 +11,7 @@ class Database {
 		this.database.run("CREATE TABLE IF NOT EXISTS assigments(subclass VARCHAR,subject VARCHAR,title VARCHAR,description VARCHAR, due INT, userid INT, created INT,aid VARCHAR , files VARCHAR)", (err) => {
 			if (err) { console.log(err) }
 		})
-		this.database.run("CREATE TABLE IF NOT EXISTS users(uid TEXT, created INT, name TEXT, discord TEXT, password TEXT , salt TEXT, last_login INT, token TEXT)", (err) => {
+		this.database.run("CREATE TABLE IF NOT EXISTS users(uid TEXT, created INT, nick TEXT, discord TEXT, password TEXT , salt TEXT, last_login INT, token TEXT,status INT)", (err) => {
 			if (err) { console.log(err) }
 		})
 	}

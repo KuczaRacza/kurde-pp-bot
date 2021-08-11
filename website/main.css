@@ -1,3 +1,30 @@
-body{
-    
+@media (min-aspect-ratio: 4/3){
+    body{
+        background-color: rgb(21, 24, 34);
+        font-family:Arial, Helvetica, sans-serif
+    }
+    .assigment{
+        background-color: rgba(57, 64, 87, 0.479);
+        font-size: large;
+        color: seashell;
+        transition:0.5s;
+        border-style: solid;
+        border:black;
+        border: 0.1rem;
+    }
+    .assigment:hover(){
+        background-color: rgb(57, 64, 87);
+        color: white;
+    }
+    a .assigment:visited(){
+        color: wheat;
+    }
+    .box{
+        box-shadow: -2px 1px 23px 5px rgba(50,10,80,0.75);
+        -webkit-box-shadow: -2px 1px 23px 5px rgba(50,10,80,0.75);
+        -moz-box-shadow: -2px 1px 23px 5px rgba(50,10,80,0.75);
+        border-radius: 0.5rem;
+    }
+
+
 }

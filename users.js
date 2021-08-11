@@ -1,7 +1,8 @@
-const { StreamDispatcher } = require('discord.js');
+const { StreamDispatcher, SnowflakeUtil } = require('discord.js');
 const { randomInt } = require('node:crypto');
 const crypto = require('node:crypto')
 const DatabaseApp = require('./databse')
+const conf = require('./config.json')
 class Session {
 	constructor(db, dscClient) {
 		this.database = db
@@ -39,6 +40,7 @@ class Session {
 						res.end(JSON.stringify({ token: null, added: false }))
 					}
 					else {
+					
 						let user = {};
 
 						user.uid = this.randomString(32);
@@ -91,9 +93,15 @@ class Session {
 	}
 	verifcation = (user) => {
 		let text = this.randomString(6)
-		this.dscClient.users.fetch(user.discord).then((usr) => {
-			usr.send("Please verify your account\n enter this code " + text)
-		})
+			
+			this.dscClient.users.fetch(user.discord).then((usr) => {
+				this.dscClient.guilds.fetch(conf.server).then((guild) => {
+					console.log(guild.clients)
+					usr.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n http://localhost/account.html\n KOD: " + text)
+
+				})
+			})
+		
 	}
 	permission = (auth) => {
 		return new Promise((resolve, reject) => {
@@ -107,7 +115,7 @@ class Session {
 			})
 		})
 	}
-	sendMyAccounInfo = (response,auth ) => {
+	sendMyAccounInfo = (response, auth) => {
 		this.database.getUser({ token: auth }).then((res) => {
 			if (res == {}) {
 				response.end(JSON.stringify({}))
