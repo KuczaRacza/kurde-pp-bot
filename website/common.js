@@ -47,3 +47,12 @@ let APImyUserInfo = () => {
 	let myUser = fetch("http://localhost/api/myaccount", { method: 'GET', headers: { "auth": cookie.token } })
 	return myUser
 }
+let APIverifyAccount = (text) => {
+	return new Promise((resolve, reject) => {
+		let endpoint = fetch("http://localhost/api/verifyaccount?c=" + text, { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
+			response.json().then((obj => {
+				resolve(obj)
+			}))
+		})
+	})
+}

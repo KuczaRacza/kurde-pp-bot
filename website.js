@@ -27,7 +27,7 @@ class Server {
 					args[splited[0]] = splited[1]
 				});
 			}
-
+		
 			if (location == "/api/assigments") {
 				this.writeSucessHeader(response, args, this.sendAssigments)
 			}
@@ -46,6 +46,9 @@ class Server {
 			else if(location == "/api/myaccount"){
 				this.writeSucessHeader(response, request.headers.auth, this.usr.sendMyAccounInfo)
 				
+			}
+			else if(location == "/api/verifyaccount"){
+				this.writeSucessHeader(response, {code:args.c,token:request.headers.auth}, this.usr.check_code)
 			}
 			else {
 				response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")

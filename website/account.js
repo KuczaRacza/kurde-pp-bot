@@ -17,11 +17,16 @@ let instertInfo = (user) => {
 		input.type = "text"
 		input.placeholder = "kod weryfikacji"
 		let input_button = document.createElement('input')
+		input.id = "verify_me"
 		input_button.type ="button"
 		input_button.value = "wyśli"
-		input_button.onclick = "sendVerifyCode()"
+		input_button.addEventListener('click',sendVerifyCode)
 		outdiv.append(warrning)
 		outdiv.append(input)
 		outdiv.append(input_button)
 	}
+}
+let sendVerifyCode = ()=>{
+	let code = document.getElementById("verify_me").value
+	APIverifyAccount(code);
 }

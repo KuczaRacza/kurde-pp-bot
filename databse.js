@@ -1,6 +1,7 @@
 const sqlite = require('sqlite3')
 const assigmentsConfig = require('./website/limits.json')
 const { randomInt } = require('node:crypto');
+const { StreamDispatcher } = require('discord.js');
 class Database {
 
 	constructor() {
@@ -14,6 +15,7 @@ class Database {
 		this.database.run("CREATE TABLE IF NOT EXISTS users(uid TEXT, created INT, nick TEXT, discord TEXT, password TEXT , salt TEXT, last_login INT, token TEXT,status INT)", (err) => {
 			if (err) { console.log(err) }
 		})
+		this.database.run("CREATE TABLE IF NOT EXISTS verification_codes(uid TEXT,code TEXT,timestamp INTEGER)");
 	}
 	savemessage(msg) {
 		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake,channel) VALUES (?,?,?,?,?)");
@@ -164,10 +166,10 @@ class Database {
 				if (err) {
 					console.log(err)
 				}
-				
+
 				resolve(row)
 			}, (err, rows) => {
-				if(rows == 0 ){
+				if (rows == 0) {
 					resolve({})
 				}
 			})
@@ -180,6 +182,73 @@ class Database {
 		let sql = "INSERT INTO users (uid,nick,created,password,token,salt,discord,status) VALUES(?,?,?,?,?,?,?,0)"
 		let stm = this.database.prepare(sql);
 		stm.bind(user.uid, user.nick, user.created, user.password, user.token, user.salt, user.discord)
+		stm.run()
+		stm.finalize()
+	}
+	changeUser = (user) => {
+		let params = []
+		let sql = "UPDATE users SET "
+		if (user.nick != undefined) {
+			sql += "nick = ? ,"
+			params.push(user.nick)
+		}
+		if (user.password != undefined) {
+			sql += "password = ? ,"
+			params.push(user.password)
+		}
+		if (user.salt != undefined) {
+			sql += "salt = ? ,"
+			params.push(user.salt)
+		}
+		if (user.last_login != undefined) {
+			sql += "last_login = ? ,"
+			params.push(user.last_login)
+		}
+		if (user.login != undefined) {
+			sql += "login = ? ,"
+			params.push(user.login)
+		}
+		if (user.status != undefined) {
+			sql += "status = ? ,"
+			params.push(user.status)
+		}
+		sql = sql.substr(0, sql.length - 1)
+		sql += " WHERE uid = ?"
+		let stm = this.database.prepare(sql);
+		params.push(user.uid)
+		stm.bind(params)
+		stm.run()
+		stm.finalize()
+	}
+	test_code = (code, token) => {
+		return new Promise((resolve, reject) => {
+			let sql = "SELECT * FROM verification_codes WHERE uid = (SELECT uid FROM users WHERE token = ?) AND code = ?"
+			let stm = this.database.prepare(sql)
+			stm.bind(token, code)
+			stm.run()
+			stm.each((err, row) => {
+				if (err) {
+					console.log(err)
+				}
+
+				resolve(row)
+				let newsql = "UPDATE users SET status = 1 WHERE token = ?"
+				let newstm = this.database.prepare(newsql)
+				newstm.bind(token)
+				newstm.run()
+				newstm.finalize()
+			}, (err, rows) => {
+				if (rows == 0) {
+					resolve({})
+				}
+			})
+			stm.finalize
+		})
+	}
+	insert_verification_code = (code, uid) => {
+		let sql =  "INSERT  INTO verification_codes (uid,code,timestamp) VALUES (?,?,?) "
+		let stm = this.database.prepare(sql)
+		stm.bind(uid,code,new Date().getTime())
 		stm.run()
 		stm.finalize()
 	}

@@ -3,6 +3,13 @@ const { randomInt } = require('node:crypto');
 const crypto = require('node:crypto')
 const DatabaseApp = require('./databse')
 const conf = require('./config.json')
+/*
+USER STATUS 
+1 - active 
+2 - mod 
+4 - banned
+
+ */
 class Session {
 	constructor(db, dscClient) {
 		this.database = db
@@ -40,7 +47,7 @@ class Session {
 						res.end(JSON.stringify({ token: null, added: false }))
 					}
 					else {
-					
+
 						let user = {};
 
 						user.uid = this.randomString(32);
@@ -54,6 +61,7 @@ class Session {
 						this.database.addUser(user)
 						res.end(JSON.stringify({ token: user.token, added: true }))
 						this.verifcation(user)
+						
 					}
 				})
 
@@ -93,15 +101,23 @@ class Session {
 	}
 	verifcation = (user) => {
 		let text = this.randomString(6)
-			
-			this.dscClient.users.fetch(user.discord).then((usr) => {
-				this.dscClient.guilds.fetch(conf.server).then((guild) => {
-					console.log(guild.clients)
-					usr.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n http://localhost/account.html\n KOD: " + text)
 
-				})
+
+		this.dscClient.guilds.fetch(conf.server).then((guild) => {
+			guild.members.fetch(user.discord).then((mem) => {
+				mem.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n http://localhost/account.html\n KOD: " + text)
+				this.database.insert_verification_code(text,user.uid)
+				console.log("wysłano")
 			})
-		
+				.catch((res) => {
+					if (res.code == 10007) {
+
+					}
+				})
+
+		})
+
+
 	}
 	permission = (auth) => {
 		return new Promise((resolve, reject) => {
@@ -124,6 +140,18 @@ class Session {
 				response.end(JSON.stringify({ nick: res.nick, discord: res.discord, status: res.status, created: res.created }))
 			}
 		})
+	}
+	check_code = (response,args) =>{
+		if(args.code != undefined && args.token != undefined){
+			this.database.test_code(args.code,args.token).then((res)=>{
+				if(res != {}){
+					response.end(JSON.stringify(true))
+				}
+			})
+		}
+		else{
+			response.end(JSON.stringify(false));
+		}
 	}
 }
 module.exports.Session = Session;
