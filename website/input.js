@@ -54,7 +54,7 @@ function getInput() {
 		errDiv.innerText += "błędna data"
 	}
 	if (ok) {
-		addAssigment(assigment).then((res) => {
+		APIaddAssigment(assigment).then((res) => {
 			res.json().then((obj) => {
 				if (obj === true) {
 					window.location = '/'
@@ -66,7 +66,4 @@ function getInput() {
 		})
 	}
 }
-function addAssigment(asigment) {
-	let assigmetsRquest = fetch("http://localhost/api/assigmentadd", { method: 'POST', mode: 'cors', body: JSON.stringify(asigment) })
-	return assigmetsRquest;
-}
+

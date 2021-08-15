@@ -51,8 +51,8 @@ let sendReminder = () => {
 			assigs.forEach((element) => {
 				element.group = element.subclass
 				let dueDate = new Date(element.due)
-				let timeTo =dueDate.getTime() - now.getTime();
-				if (timeTo<172800) {
+				let timeTo = dueDate.getTime() - now.getTime();
+				if (timeTo < 172800) {
 					console.log(timeTo)
 					let embed = assigmentToEmbed(element)
 					embed.addField("WAŻNE TERMIN DO", new Date(element.due).toDateString())
@@ -93,9 +93,12 @@ function play_sounds(connection, link) {
 }
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
-	server.start(43400, database)
+	server.start(43400, database,client)
 	surprise(sendPlanMessage)
 	server.onAssigmentAddCB = sendNewAssigments;
+	database.dscClient = client;
+
+	
 
 
 });
@@ -104,6 +107,7 @@ let sendNewAssigments = (assigment) => {
 		chann.send(assigmentToEmbed(assigment))
 	})
 }
+
 function rickroll() {
 	const channel = client.channels.fetch("842510549668986924")
 	channel.then((chann) => {

@@ -2,20 +2,28 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <script src="assigment.js"></script>
-    <script src="common.js"></script>
+	<meta charset="utf-8">
+	<script src="assigment.js"></script>
+	<script src="common.js"></script>
+	<script src="nologin.js"></script>
 </head>
 
-<body onload="start()">
-    <div id="main">
-        <h1 id="task-title"></h1>
-        <div id="task-description"></div>
-        <div id="task-group"></div>
-        <div id="task-subject"></div>
-        <div id="task-created"></div>
-        <div id="task-due"></div>
-    </div>
+<body onload="isLoged();start()">
+	<div id="menu"><a href="/">
+			<div>Kurde PP bot</div>
+		</a>
+		<a href="/assigments.html">
+			<div>Zadania</div>
+		</a>
+	</div>
+	<div id="main">
+		<h1 id="task-title"></h1>
+		<div id="task-description"></div>
+		<div id="task-group"></div>
+		<div id="task-subject"></div>
+		<div id="task-created"></div>
+		<div id="task-due"></div>
+	</div>
 
 </body>
 
