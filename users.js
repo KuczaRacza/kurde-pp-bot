@@ -61,7 +61,7 @@ class Session {
 						this.database.addUser(user)
 						res.end(JSON.stringify({ token: user.token, added: true }))
 						this.verifcation(user)
-						
+
 					}
 				})
 
@@ -85,7 +85,6 @@ class Session {
 				res.end(JSON.stringify({ loged: false, token: null }))
 			}
 			this.database.getUser({ discord: login.discord }).then((user) => {
-				console.log(user)
 				let shasum = crypto.createHash('sha1')
 				let hash = shasum.update(login.password + user.salt).digest('base64');
 				if (hash == user.password) {
@@ -106,7 +105,7 @@ class Session {
 		this.dscClient.guilds.fetch(conf.server).then((guild) => {
 			guild.members.fetch(user.discord).then((mem) => {
 				mem.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n http://localhost/account.html\n KOD: " + text)
-				this.database.insert_verification_code(text,user.uid)
+				this.database.insert_verification_code(text, user.uid)
 				console.log("wysłano")
 			})
 				.catch((res) => {
@@ -121,12 +120,13 @@ class Session {
 	}
 	permission = (auth) => {
 		return new Promise((resolve, reject) => {
-			this.database.getUser({ token: auth }).then((res) => {
-				if (res != {}) {
+			this.database.getUser({ token: auth, status: 1 }).then((res) => {
+				
+				if (res.discord ==  undefined) {
 					resolve(false)
 				}
 				else {
-					resolve(true)
+					console.log(res)
 				}
 			})
 		})
@@ -141,15 +141,15 @@ class Session {
 			}
 		})
 	}
-	check_code = (response,args) =>{
-		if(args.code != undefined && args.token != undefined){
-			this.database.test_code(args.code,args.token).then((res)=>{
-				if(res != {}){
+	check_code = (response, args) => {
+		if (args.code != undefined && args.token != undefined) {
+			this.database.test_code(args.code, args.token).then((res) => {
+				if (res != {}) {
 					response.end(JSON.stringify(true))
 				}
 			})
 		}
-		else{
+		else {
 			response.end(JSON.stringify(false));
 		}
 	}

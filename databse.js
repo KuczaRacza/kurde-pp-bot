@@ -150,6 +150,10 @@ class Database {
 			sql += "nick = ? AND "
 			bindings.push(params.nick)
 		}
+		if(params.status != undefined){
+			sql += "status = ? AND "
+			bindings.push(params.status)
+		}
 		if (sql.includes('AND')) {
 			sql = sql.substr(0, sql.length - 5)
 		}

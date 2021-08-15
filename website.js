@@ -8,11 +8,11 @@ class Server {
 	constructor() {
 		console.log("crating server")
 	}
-	start = (port, database,dscClient) => {
+	start = (port, database, dscClient) => {
 
-		console.log("listening on port " + port)	
+		console.log("listening on port " + port)
 		this.database = database;
-		this.usr = new users.Session(this.database,dscClient);
+		this.usr = new users.Session(this.database, dscClient);
 		this.dscClient = dscClient;
 		http.createServer((request, response) => {
 			let location = request.url
@@ -27,34 +27,54 @@ class Server {
 					args[splited[0]] = splited[1]
 				});
 			}
-		
-			if (location == "/api/assigments") {
-				this.writeSucessHeader(response, args, this.sendAssigments)
-			}
-			else if (location == "/api/assigmentadd" && request.method == "POST") {
-				this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
-			}
-			else if (location == "/api/assigment") {
-				this.writeSucessHeader(response, args, this.writeAssigmentPage)
-			}
-			else if (location == "/api/useradd" && request.method == "POST") {
+
+
+			if (location == "/api/useradd" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.usr.addUser(request, res) })
 			}
-			else if (location == "/api/login" && request.method == "POST"){
+			else if (location == "/api/login" && request.method == "POST") {
 				this.writeSucessHeader(response, args, (res, args) => { this.usr.logUser(request, res) })
 			}
-			else if(location == "/api/myaccount"){
-				this.writeSucessHeader(response, request.headers.auth, this.usr.sendMyAccounInfo)
-				
+
+			else if (location == "/api/verifyaccount") {
+				this.writeSucessHeader(response, { code: args.c, token: request.headers.auth }, this.usr.check_code)
 			}
-			else if(location == "/api/verifyaccount"){
-				this.writeSucessHeader(response, {code:args.c,token:request.headers.auth}, this.usr.check_code)
+			else if (location == "/api/myaccount") {
+				this.writeSucessHeader(response, request.headers.auth, this.usr.sendMyAccounInfo)
+
+			}
+			else if (location == "/api/assigments" || location == "/api/assigmentadd" || location == "/api/myaccount" || location == "/api/assigment" && request.headers.auth != undefined) {
+				this.usr.permission(request.headers.auth).then((res) => {
+					if (res == true) {
+						if (location == "/api/assigments") {
+							this.writeSucessHeader(response, args, this.sendAssigments)
+						}
+						else if (location == "/api/assigmentadd" && request.method == "POST") {
+							this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
+						}
+						else if (location == "/api/assigment") {
+							this.writeSucessHeader(response, args, this.writeAssigmentPage)
+						}
+
+						else {
+							response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")
+							response.writeHead(404, { 'Content-Type': 'text/plain' })
+							response.end();
+						}
+					}
+					else {
+						response.write("<h1>FOREBIDDEN</h1><br>403<br>kurde-pp-bot")
+						response.writeHead(403, { 'Content-Type': 'text/plain' })
+						response.end();
+					}
+				})
 			}
 			else {
 				response.write("<h1>NOT FOUND</h1><br>404<br>kurde-pp-bot")
 				response.writeHead(404, { 'Content-Type': 'text/plain' })
 				response.end();
 			}
+
 			let user_agent = ""
 			request.rawHeaders.forEach((element, i) => {
 				if (element == "User-Agent") {

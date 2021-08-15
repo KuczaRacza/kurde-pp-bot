@@ -28,5 +28,7 @@ let instertInfo = (user) => {
 }
 let sendVerifyCode = ()=>{
 	let code = document.getElementById("verify_me").value
-	APIverifyAccount(code);
+	APIverifyAccount(code).then((res)=>{
+		window.location.reload()
+	});
 }
