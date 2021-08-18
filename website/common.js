@@ -7,6 +7,25 @@ let getCookie = () => {
 let writeCookie = () => {
 	document.cookie = JSON.stringify(cookie)
 }
+let myNick = () => {
+	if(cookie.nick != undefined){
+		return cookie.nick
+
+	}
+	else{
+		getCookie()
+		if(cookie.nick != undefined){
+			return cookie.nick
+	
+		}
+		else{
+			return undefined
+		}
+	}
+}
+let insertMyNick = () =>{
+	document.getElementById('menu-nick').innerText = myNick()
+}
 let setHttpParams = (endpoint, params) => {
 	let url = endpoint;
 	Object.keys(params).forEach(key => {
@@ -32,24 +51,46 @@ let APIgetAssigments = (params) => {
 	return prm
 }
 let APIaddAssigment = (asigment) => {
-	let assigmetsRquest = fetch("http://localhost/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": cookie.token } })
-	return assigmetsRquest;
+	return new Promise((resolve, reject) => {
+		fetch("http://localhost/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": cookie.token } }).then(response => {
+			response.json().then(obj => {
+				resolve(obj)
+			})
+		})
+	})
 }
 let APIaddUser = (data) => {
-	let userAdd = fetch("http://localhost/api/useradd", { method: 'POST', body: JSON.stringify(data) })
-	return userAdd
+	return new Promise((resolve, reject) => {
+		fetch("http://localhost/api/useradd", { method: 'POST', body: JSON.stringify(data) }).then(response => {
+			response.json().then(obj => {
+				resolve(obj)
+			})
+		})
+	})
+
 }
 let APIloginUser = (login) => {
-	let loginUser = fetch("http://localhost/api/login", { method: 'POST', body: JSON.stringify(login) })
-	return loginUser;
+	return new Promise((resolve, reject) => {
+		fetch("http://localhost/api/login", { method: 'POST', body: JSON.stringify(login) }).then(response => {
+			response.json().then(obj => {
+				resolve(obj)
+			})
+		})
+	})
+
 }
 let APImyUserInfo = () => {
-	let myUser = fetch("http://localhost/api/myaccount", { method: 'GET', headers: { "auth": cookie.token } })
-	return myUser
+	return new Promise((resolve, reject) => {
+		fetch("http://localhost/api/myaccount", { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
+			response.json().then((obj => {
+				resolve(obj)
+			}))
+		})
+	})
 }
 let APIverifyAccount = (text) => {
 	return new Promise((resolve, reject) => {
-		let endpoint = fetch("http://localhost/api/verifyaccount?c=" + text, { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
+		fetch("http://localhost/api/verifyaccount?c=" + text, { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
 			response.json().then((obj => {
 				resolve(obj)
 			}))

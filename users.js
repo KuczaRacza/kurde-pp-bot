@@ -121,12 +121,12 @@ class Session {
 	permission = (auth) => {
 		return new Promise((resolve, reject) => {
 			this.database.getUser({ token: auth, status: 1 }).then((res) => {
-				
-				if (res.discord ==  undefined) {
+
+				if (res.discord == undefined) {
 					resolve(false)
 				}
 				else {
-					console.log(res)
+					resolve(true)
 				}
 			})
 		})
@@ -144,8 +144,12 @@ class Session {
 	check_code = (response, args) => {
 		if (args.code != undefined && args.token != undefined) {
 			this.database.test_code(args.code, args.token).then((res) => {
-				if (res != {}) {
+				console.log(res)
+
+				if (res.uid != undefined) {
 					response.end(JSON.stringify(true))
+				} else {
+					response.end(JSON.stringify(false));
 				}
 			})
 		}

@@ -3,7 +3,10 @@ const { AssertionError } = require('assert');
 const http = require('http');
 const fs = require('fs')
 const dbApp = require('./databse')
-const users = require('./users')
+const users = require('./users');
+const limits = require('./website/limits.json')
+const { config } = require('process');
+let users_spam_limit = {}
 class Server {
 	constructor() {
 		console.log("crating server")
@@ -105,27 +108,35 @@ class Server {
 	}
 
 	writeAssigment = (req, res, args) => {
-		let post = "";
-		req.on('data', (chunk) => {
-			post += chunk;
-		})
-		req.on('end', () => {
-			try {
-				let obj = JSON.parse(post)
-				if (this.database.addAssigment(obj)) {
-					res.end(JSON.stringify(true))
-					this.onAssigmentAddCB(obj)
+		if(users_spam_limit[req.headers.auth] == undefined){
+			users_spam_limit[req.headers.auth] =0
+		}
+		if (new Date().getTime() - users_spam_limit[req.headers.auth] > limits.spamlimit) {
+			users_spam_limit[req.headers.auth] = new Date().getTime()
+			let post = "";
+			req.on('data', (chunk) => {
+				post += chunk;
+			})
+			req.on('end', () => {
+				try {
+					let obj = JSON.parse(post)
+					if (this.database.addAssigment(obj)) {
+						res.end(JSON.stringify(true))
+						this.onAssigmentAddCB(obj)
 
 
+					}
+					else {
+						res.end(JSON.stringify(false))
+					}
+
+				} catch (err) {
+					console.log(err)
 				}
-				else {
-					res.end(JSON.stringify(false))
-				}
-
-			} catch (err) {
-				console.log(err)
-			}
-		})
+			})
+		} else {
+			res.end(JSON.stringify(false))
+		}
 	}
 	writeAssigmentPage = (res, args) => {
 		this.database.getAssigments(args).then((obj) => {
