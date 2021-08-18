@@ -98,9 +98,6 @@ client.on('ready', () => {
 	server.onAssigmentAddCB = sendNewAssigments;
 	database.dscClient = client;
 
-	
-
-
 });
 let sendNewAssigments = (assigment) => {
 	client.channels.fetch(Config.assigments_channel).then((chann) => {

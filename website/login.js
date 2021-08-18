@@ -2,18 +2,24 @@ let login_button = () => {
 	let login = {}
 	login.discord = document.getElementById("log-discord").value;
 	login.password = document.getElementById("log-password").value;
-	APIloginUser(login).then((res) => {
-		res.json().then((obj) => {
-			if (obj.loged == true) {
-				cookie.token = obj.token
-				writeCookie();
-				let new_loc = window.location.toString().split("#");
-				if (new_loc.length == 2) {
-					window.location = new_loc[1]
-				}
+	APIloginUser(login).then((obj) => {
+		if (obj.loged == true) {
 
-			}
-		})
+			cookie.token = obj.token
+			writeCookie();
+			APImyUserInfo().then(info => {
+				let new_loc = window.location.toString().split("#");
+				cookie.nick = info.nick
+				writeCookie()
+				if (new_loc.length == 2) {
+					window.location = window.location.href.split('/')[1] + new_loc[1]
+					
+				}
+			})
+
+
+		}
+
 
 	})
 }
@@ -31,7 +37,7 @@ let register_form = () => {
 			else {
 				cookie.token = obj.token
 				writeCookie();
-				window.location = "/";
+				window.location = "/account.html";
 
 			}
 		})

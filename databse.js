@@ -234,7 +234,7 @@ class Database {
 				if (err) {
 					console.log(err)
 				}
-
+				
 				resolve(row)
 				let newsql = "UPDATE users SET status = 1 WHERE token = ?"
 				let newstm = this.database.prepare(newsql)

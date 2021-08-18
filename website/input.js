@@ -54,15 +54,15 @@ function getInput() {
 		errDiv.innerText += "błędna data"
 	}
 	if (ok) {
-		APIaddAssigment(assigment).then((res) => {
-			res.json().then((obj) => {
+		APIaddAssigment(assigment).then((obj) => {
+		
 				if (obj === true) {
 					window.location = '/'
 				}
 				else {
 					errDiv.innerText = " wystąpił błąd przy dodaniu"
 				}
-			})
+
 		})
 	}
 }

@@ -3,11 +3,13 @@
 	"description-min":15,
 	"title-max": 50,
 	"title-min":8,
+	"spamlimit": 35000,
 	"groups": [
 		"1",
 		"2",
 		"jniem1",
-		"jniem2"
+		"jniem2",
+		"wszyscy"
 	],
 	"subjects": [
 		"j.niem",
