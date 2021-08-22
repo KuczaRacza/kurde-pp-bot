@@ -43,3 +43,31 @@ function createSection(assigmentsObject) {
 
 	});
 }
+let instertLessons = ()=>{
+	let lesson_to_html = (lesson) =>{
+		let maindiv = document.createElement('div')
+		maindiv.className ="lesson-div"
+		let hour = document.createElement('span')
+		hour.className = "lesson-hour lesson-element"
+		hour.innerText = lesson.hour
+		maindiv.append(hour)
+		let subject = document.createElement('span')
+		subject.className ="lesson-subject lesson-element"
+		subject.innerText = lesson.subject 
+		maindiv.append(subject)
+		let room = document.createElement('span')
+		room.className ="lesson-room lesson-element"
+		room.innerText = lesson.room 
+		maindiv.append(room)
+		return maindiv
+	}
+	let date = new Date()
+	let today_div = document.getElementById("lessons-today")
+	APIgetLessons(date.getHours,date.getDay,10).then(obj =>{
+		obj.forEach(element => {
+			console.log(element)
+			today_div.append(lesson_to_html(element))
+		});
+	})
+
+}

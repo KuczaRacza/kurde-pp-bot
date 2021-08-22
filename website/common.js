@@ -8,22 +8,22 @@ let writeCookie = () => {
 	document.cookie = JSON.stringify(cookie)
 }
 let myNick = () => {
-	if(cookie.nick != undefined){
+	if (cookie.nick != undefined) {
 		return cookie.nick
 
 	}
-	else{
+	else {
 		getCookie()
-		if(cookie.nick != undefined){
+		if (cookie.nick != undefined) {
 			return cookie.nick
-	
+
 		}
-		else{
+		else {
 			return undefined
 		}
 	}
 }
-let insertMyNick = () =>{
+let insertMyNick = () => {
 	document.getElementById('menu-nick').innerText = myNick()
 }
 let setHttpParams = (endpoint, params) => {
@@ -94,6 +94,15 @@ let APIverifyAccount = (text) => {
 			response.json().then((obj => {
 				resolve(obj)
 			}))
+		})
+	})
+}
+let APIgetLessons = (start, day, number) => {
+	return new Promise((resolve, reject) => {
+		fetch("http://localhost/api/lessons?d=" + day + "&n=" + number + "&s=" + start, { method: 'GET', headers: { "auth": cookie.token } }).then(response => {
+			response.json().then(obj => {
+				resolve(obj)
+			})
 		})
 	})
 }

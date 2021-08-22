@@ -80,7 +80,6 @@ function surprise(cb) {
 			}
 		})
 		if (now.getHours() == 17) {
-			console.log("aaa")
 			sendReminder()
 		}
 		now = new Date();

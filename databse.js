@@ -44,7 +44,7 @@ class Database {
 			for (let i = 0; i < 32; i++) {
 				randomstring += chars[randomInt(chars.length - 1)]
 			}
-			stm.run(subclass, subject, tilte, description, due, new Date().getTime(), randomstring,token);
+			stm.run(subclass, subject, tilte, description, due, new Date().getTime(), randomstring, token);
 			stm.finalize()
 			return true
 		}
@@ -126,7 +126,10 @@ class Database {
 				}
 				obj = row
 
-			}, (err, num) => { resolve(obj) })
+			}, (err, num) => {
+				
+				resolve(obj)
+			})
 		})
 		return promise
 	}
@@ -150,7 +153,7 @@ class Database {
 			sql += "nick = ? AND "
 			bindings.push(params.nick)
 		}
-		if(params.status != undefined){
+		if (params.status != undefined) {
 			sql += "status = ? AND "
 			bindings.push(params.status)
 		}
@@ -234,7 +237,7 @@ class Database {
 				if (err) {
 					console.log(err)
 				}
-				
+
 				resolve(row)
 				let newsql = "UPDATE users SET status = 1 WHERE token = ?"
 				let newstm = this.database.prepare(newsql)
@@ -250,9 +253,9 @@ class Database {
 		})
 	}
 	insert_verification_code = (code, uid) => {
-		let sql =  "INSERT  INTO verification_codes (uid,code,timestamp) VALUES (?,?,?) "
+		let sql = "INSERT  INTO verification_codes (uid,code,timestamp) VALUES (?,?,?) "
 		let stm = this.database.prepare(sql)
-		stm.bind(uid,code,new Date().getTime())
+		stm.bind(uid, code, new Date().getTime())
 		stm.run()
 		stm.finalize()
 	}

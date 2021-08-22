@@ -1,11 +1,11 @@
-const { AssertionError } = require('assert');
+const { AssertionError, strict } = require('assert');
 
 const http = require('http');
 const fs = require('fs')
 const dbApp = require('./databse')
 const users = require('./users');
 const limits = require('./website/limits.json')
-const { config } = require('process');
+const lessons = require('./lessons_start.json')
 let users_spam_limit = {}
 class Server {
 	constructor() {
@@ -46,7 +46,7 @@ class Server {
 				this.writeSucessHeader(response, request.headers.auth, this.usr.sendMyAccounInfo)
 
 			}
-			else if (location == "/api/assigments" || location == "/api/assigmentadd" || location == "/api/myaccount" || location == "/api/assigment" && request.headers.auth != undefined) {
+			else if (location == "/api/assigments" || location == "/api/assigmentadd" || location == "/api/myaccount" || location == "/api/assigment" || location == "/api/lessons" && request.headers.auth != undefined) {
 				this.usr.permission(request.headers.auth).then((res) => {
 					if (res == true) {
 						if (location == "/api/assigments") {
@@ -58,6 +58,9 @@ class Server {
 						}
 						else if (location == "/api/assigment") {
 							this.writeSucessHeader(response, args, this.writeAssigmentPage)
+						}
+						else if (location == "/api/lessons") {
+							this.writeSucessHeader(response, args, this.getNextLessons)
 						}
 
 						else {
@@ -144,6 +147,36 @@ class Server {
 			res.write(JSON.stringify(obj))
 			res.end();
 		})
+	}
+	getNextLessons = async (response, args) => {
+		if (typeof (args.d) == Number || typeof (args.s) == Number || typeof (args.n) == Number) {
+			response.end("BAD REQEST")
+		}
+		else {
+
+			let start = 0;
+			let lessons_to_send = []
+			lessons.lessons.forEach((element, i) => {
+				let hour = element.split(':')[1]
+				if (hour == args.s) {
+					start = i - 1;
+					if (start < 0) {
+						start == 0;
+
+					}
+				}
+			})
+			let end = Math.min(args.n, lessons.lessons.length - start)
+			for (let i = start; i < end; i++) {
+				let res = await this.database.getLessons(args.d, lessons.lessons[i])
+				if (res.hour != undefined) {
+					lessons_to_send.push(res)
+				}
+
+			}
+			response.write(JSON.stringify(lessons_to_send))
+			response.end()
+		}
 	}
 
 }
