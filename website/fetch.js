@@ -2,7 +2,7 @@ function GetAssigments() {
 	let params = {}
 	let gr = document.getElementById('amt-group').value
 	if (gr != '*') {
-		params.group = gr
+		params.subclass = gr
 	}
 	let sb = document.getElementById('amt-subject').value
 	if(sb != "*"){

@@ -27,24 +27,24 @@ class Database {
 		stm.finalize();
 
 	}
-	addAssigment(assigmentObj, userid) {
+	addAssigment(assigmentObj, token) {
 		let tilte = assigmentObj.title;
 		let description = assigmentObj.description
 		let due = Number(assigmentObj.due)
 		let subject = assigmentObj.subject;
-		let group = assigmentObj.group;
+		let subclass = assigmentObj.subclass;
 
 		if (tilte.length < assigmentsConfig['title-max'] && description.length < assigmentsConfig['description-max']
 			&& tilte.length > assigmentsConfig['title-min'] && description.length > assigmentsConfig['description-min']
-			&& due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(group)
+			&& due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(subclass)
 			&& assigmentsConfig.subjects.includes(subject)) {
-			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due,userid,created,aid) VALUES (?,?,?,?,?,?,?,?)")
+			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due,created,aid,userid) VALUES (?,?,?,?,?,?,?,(SELECT uid FROM users WHERE token = ?))")
 			let randomstring = ""
 			let chars = "abcdefghijklmnoprstuvwxz01234567890ABCDEFGHIJKLMNOPRSTQUV"
 			for (let i = 0; i < 32; i++) {
 				randomstring += chars[randomInt(chars.length - 1)]
 			}
-			stm.run(group, subject, tilte, description, due, 1, new Date().getTime(), randomstring);
+			stm.run(subclass, subject, tilte, description, due, new Date().getTime(), randomstring,token);
 			stm.finalize()
 			return true
 		}
@@ -57,7 +57,7 @@ class Database {
 
 
 		let sql = "SELECT * FROM assigments WHERE "
-		if (params.group != undefined) {
+		if (params.subclass != undefined) {
 			sql += "subclass = ? AND "
 		}
 		if (params.subject != undefined) {
@@ -78,8 +78,8 @@ class Database {
 		sql += " ORDER BY due ASC"
 		let stm = this.database.prepare(sql)
 		let bindings = []
-		if (params.group != undefined) {
-			bindings.push(params.group)
+		if (params.subclass != undefined) {
+			bindings.push(params.subclass)
 		}
 		if (params.subject != undefined) {
 			bindings.push(params.subject)

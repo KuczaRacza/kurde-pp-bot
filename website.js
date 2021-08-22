@@ -53,6 +53,7 @@ class Server {
 							this.writeSucessHeader(response, args, this.sendAssigments)
 						}
 						else if (location == "/api/assigmentadd" && request.method == "POST") {
+							args["token"] = request.headers.auth
 							this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
 						}
 						else if (location == "/api/assigment") {
@@ -84,7 +85,7 @@ class Server {
 					user_agent = request.rawHeaders[i + 1]
 				}
 			})
-			let log = new Date().toDateString() + "  " + request.method + " " + location + " " + user_agent + "\n";
+			let log = new Date().toDateString() + "  " + request.socket.address().address + "  " + request.httpVersion + " " + request.method + " " + location + " " + user_agent + "\n";
 			fs.appendFile("./acess.log", log, () => { })
 
 		}).listen(port);
@@ -108,8 +109,8 @@ class Server {
 	}
 
 	writeAssigment = (req, res, args) => {
-		if(users_spam_limit[req.headers.auth] == undefined){
-			users_spam_limit[req.headers.auth] =0
+		if (users_spam_limit[req.headers.auth] == undefined) {
+			users_spam_limit[req.headers.auth] = 0
 		}
 		if (new Date().getTime() - users_spam_limit[req.headers.auth] > limits.spamlimit) {
 			users_spam_limit[req.headers.auth] = new Date().getTime()
@@ -120,7 +121,7 @@ class Server {
 			req.on('end', () => {
 				try {
 					let obj = JSON.parse(post)
-					if (this.database.addAssigment(obj)) {
+					if (this.database.addAssigment(obj, args.token)) {
 						res.end(JSON.stringify(true))
 						this.onAssigmentAddCB(obj)
 

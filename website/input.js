@@ -48,7 +48,7 @@ function getInput() {
 	}
 	assigment.due =  new Date(document.getElementById('amt-due').value).getTime()
 	assigment.subject = document.getElementById('amt-subject').value
-	assigment.group = document.getElementById('amt-group').value
+	assigment.subclass = document.getElementById('amt-group').value
 	if (assigment.due <= 0 || assigment.due == undefined || assigment.due == NaN || assigment.due == null) {
 		ok = false;
 		errDiv.innerText += "błędna data"
