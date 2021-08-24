@@ -16,6 +16,7 @@ class Database {
 			if (err) { console.log(err) }
 		})
 		this.database.run("CREATE TABLE IF NOT EXISTS verification_codes(uid TEXT,code TEXT,timestamp INTEGER)");
+		this.database.run("CREATE TABLE completed_assignments (aid	TEXT,uid	TEXT,timestamp	INTEGER,link	TEXT);")
 	}
 	savemessage(msg) {
 		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake,channel) VALUES (?,?,?,?,?)");
@@ -39,12 +40,8 @@ class Database {
 			&& due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(subclass)
 			&& assigmentsConfig.subjects.includes(subject)) {
 			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due,created,aid,userid) VALUES (?,?,?,?,?,?,?,(SELECT uid FROM users WHERE token = ?))")
-			let randomstring = ""
-			let chars = "abcdefghijklmnoprstuvwxz01234567890ABCDEFGHIJKLMNOPRSTQUV"
-			for (let i = 0; i < 32; i++) {
-				randomstring += chars[randomInt(chars.length - 1)]
-			}
-			stm.run(subclass, subject, tilte, description, due, new Date().getTime(), randomstring, token);
+
+			stm.run(subclass, subject, tilte, description, due, new Date().getTime(), assigmentObj.aid, token);
 			stm.finalize()
 			return true
 		}
@@ -127,7 +124,7 @@ class Database {
 				obj = row
 
 			}, (err, num) => {
-				
+
 				resolve(obj)
 			})
 		})
@@ -249,7 +246,7 @@ class Database {
 					resolve({})
 				}
 			})
-			stm.finalize
+			stm.finalize()
 		})
 	}
 	insert_verification_code = (code, uid) => {
@@ -258,6 +255,53 @@ class Database {
 		stm.bind(uid, code, new Date().getTime())
 		stm.run()
 		stm.finalize()
+	}
+	insert_completed_assignments = (entery, token) => {
+		let aid_test = "SELECT * FROM assigments WHERE aid =?"
+		let stm_aid_test = this.database.prepare(aid_test);
+		stm_aid_test.bind(entery.aid)
+		stm_aid_test.run()
+		stm_aid_test.each((err, row) => {
+
+		}, (err, num) => {
+			if (num > 0) {
+				stm_aid_test.finalize()
+				let sql = "INSERT INTO completed_assignments (uid,aid,link,timestamp) VALUES ((SELECT uid FROM users WHERE  token = ?), ?,?,?)"
+				let stm = this.database.prepare(sql)
+				stm.bind(token, entery.aid, entery.link.substr(0, 200), new Date().getTime())
+				stm.run()
+				stm.finalize()
+			}
+		})
+
+
+	}
+	list_completed_assignments = (aid) => {
+		return new Promise((resolve, reject) => {
+			let aid_test = "SELECT * FROM assigments WHERE aid =?"
+			let stm_aid_test = this.database.prepare(aid_test);
+			stm_aid_test.bind(entery.aid)
+			stm_aid_test.run()
+			stm_aid_test.each((err, row) => {
+
+			}, (err, num) => {
+				if (num > 0) {
+					let sql = "SELECT * FROM completed_assignments WHERE aid = ?"
+					let stm = this.database.prepare(sql)
+					stm.bind(aid)
+					stm.all((err, res) => { resolve(res) })
+					stm.finalize()
+				}
+				else if (aid == "ALL") {
+					let sql = "SELECT * FROM completed_assignments"
+					let stm = this.database.prepare(sql)
+					stm.all((err, res) => { resolve(res) })
+					stm.finalize()
+				}
+				else { resolve([]) }
+
+			})
+		})
 	}
 }
 module.exports.DatabaseApp = Database;

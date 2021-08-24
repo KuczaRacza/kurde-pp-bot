@@ -63,11 +63,16 @@ let instertLessons = ()=>{
 	}
 	let date = new Date()
 	let today_div = document.getElementById("lessons-today")
-	APIgetLessons(date.getHours,date.getDay,10).then(obj =>{
+	APIgetLessons(date.getHours(),date.getDay(),10).then(obj =>{
 		obj.forEach(element => {
 			console.log(element)
 			today_div.append(lesson_to_html(element))
 		});
+		if(obj[0] == undefined){
+
+
+			today_div.innerText = "Brak lekcji na dziś"
+		}
 	})
 
 }

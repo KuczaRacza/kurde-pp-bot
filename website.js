@@ -1,5 +1,5 @@
 const { AssertionError, strict } = require('assert');
-
+const { randomInt } = require('node:crypto');
 const http = require('http');
 const fs = require('fs')
 const dbApp = require('./databse')
@@ -124,6 +124,12 @@ class Server {
 			req.on('end', () => {
 				try {
 					let obj = JSON.parse(post)
+					let randomstring = ""
+					let chars = "abcdefghijklmnoprstuvwxz01234567890ABCDEFGHIJKLMNOPRSTQUV"
+					for (let i = 0; i < 32; i++) {
+						randomstring += chars[randomInt(chars.length - 1)]
+					}
+					obj.aid =  randomstring;
 					if (this.database.addAssigment(obj, args.token)) {
 						res.end(JSON.stringify(true))
 						this.onAssigmentAddCB(obj)

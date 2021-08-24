@@ -12,6 +12,7 @@ const { commands, config } = require('npm');
 const database = new db_lib.DatabaseApp()
 const server = new WWWServer.HttpServer()
 let assigmentToEmbed = (assigment) => {
+	console.log(assigment)
 	let embed = new Discord.MessageEmbed()
 	embed.title = assigment.title.substr(0, 40)
 	embed.description = assigment.description.substr(0, 80)
@@ -99,7 +100,7 @@ let sendNewAssigments = (assigment) => {
 	client.channels.fetch(Config.assigments_channel).then((chann) => {
 
 		if (assigment[0] == undefined) {
-			if (assigment.time == undefined) {
+			if (assigment.due == undefined) {
 				chann.send("Brak zadań akutalnie")
 				return
 			} else {

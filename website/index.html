@@ -2,29 +2,39 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <script src="common.js"></script>
-    <script src="assigment.js"></script>
+	<meta charset="utf-8">
+	<script src="common.js"></script>
+	<script src="assigment.js"></script>
 	<script src="nologin.js"></script>
+	<script src="fetch.js"></script>
 </head>
-<body onload="isLoged(); dashboardTasks(); insertMyNick()">
-    <div id="main">
-        <div id="menu"><a href="/">
-                <div>Kurde PP bot</div>
-            </a>
-			<a href="./account.html"> 
-			<div id="menu-nick">
-				
-			</div>
-		</a></div>
-        <div id="dashboard">
-            <div id="assigments-dash">
-              <a href="./assigments.html"> <h1> Zadania</h1></a>
-                <div id="assigments"></div>
-            </div>
 
-        </div>
-    </div>
+<body onload="isLoged(); dashboardTasks(); insertMyNick(); instertLessons();">
+	<div id="main">
+		<div id="menu"><a href="/">
+				<div>Kurde PP bot</div>
+			</a>
+			<a href="./account.html">
+				<div id="menu-nick">
+
+				</div>
+			</a>
+		</div>
+		<div id="dashboard">
+			<div id="assigments-dash">
+				<a href="./assigments.html">
+					<h1> Zadania</h1>
+				</a>
+				<div id="assigments"></div>
+			</div>
+			<div id="lessons-dash">
+				<h1>Lekcje</h1>
+				<div id="lessons-today"></div>
+				</div>
+			</div>
+
+		</div>
+	</div>
 </body>
 
 </html>
