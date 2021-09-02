@@ -10,6 +10,8 @@ USER STATUS
 4 - banned
 
  */
+let token_cache = {}
+
 class Session {
 	constructor(db, dscClient) {
 		this.database = db
@@ -99,12 +101,13 @@ class Session {
 
 	}
 	verifcation = (user) => {
+		
 		let text = this.randomString(6)
 
 
 		this.dscClient.guilds.fetch(conf.server).then((guild) => {
 			guild.members.fetch(user.discord).then((mem) => {
-				mem.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n http://localhost/account.html\n KOD: " + text)
+				mem.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n https://kurde-pp.kuczaracza.com/account.html\n KOD: " + text)
 				this.database.insert_verification_code(text, user.uid)
 				console.log("wysłano")
 			})
@@ -120,15 +123,23 @@ class Session {
 	}
 	permission = (auth) => {
 		return new Promise((resolve, reject) => {
-			this.database.getUser({ token: auth, status: 1 }).then((res) => {
-
-				if (res.discord == undefined) {
-					resolve(false)
-				}
-				else {
-					resolve(true)
-				}
-			})
+			if (token_cache[auth] === true) {
+				resolve(true)
+			}
+			else if (token_cache[auth] === false) {
+				resolve(false)
+			} else {
+				this.database.getUser({ token: auth, status: 1 }).then((res) => {
+					if (res.discord == undefined) {
+						token_cache[auth] = false;
+						resolve(false)
+					}
+					else {
+						token_cache[auth] = true;
+						resolve(true)
+					}
+				})
+			}
 		})
 	}
 	sendMyAccounInfo = (response, auth) => {

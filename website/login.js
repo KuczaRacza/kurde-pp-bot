@@ -13,7 +13,7 @@ let login_button = () => {
 				writeCookie()
 				if (new_loc.length == 2) {
 					window.location = window.location.href.split('/')[1] + new_loc[1]
-					
+
 				}
 			})
 
@@ -28,18 +28,15 @@ let register_form = () => {
 	userdata.nick = document.getElementById('reg-nick').value
 	userdata.discord = document.getElementById('reg-tag').value
 	userdata.password = document.getElementById('reg-passwd').value
-	APIaddUser(userdata).then((res) => {
-		res.json().then((obj) => {
-			console.log(obj)
-			if (obj.added == false || obj.added == undefined) {
+	APIaddUser(userdata).then((obj) => {
+		console.log(obj)
+		if (obj.added == false || obj.added == undefined) {
 
-			}
-			else {
-				cookie.token = obj.token
-				writeCookie();
-				window.location = "/account.html";
-
-			}
-		})
+		}
+		else {
+			cookie.token = obj.token
+			writeCookie();
+			window.location = "/account.html";
+		}
 	})
 }

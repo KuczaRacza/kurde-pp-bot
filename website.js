@@ -1,11 +1,11 @@
-const { AssertionError } = require('assert');
-
+const { AssertionError, strict } = require('assert');
+const { randomInt } = require('node:crypto');
 const http = require('http');
 const fs = require('fs')
 const dbApp = require('./databse')
 const users = require('./users');
 const limits = require('./website/limits.json')
-const { config } = require('process');
+const lessons = require('./lessons_start.json')
 let users_spam_limit = {}
 class Server {
 	constructor() {
@@ -46,17 +46,21 @@ class Server {
 				this.writeSucessHeader(response, request.headers.auth, this.usr.sendMyAccounInfo)
 
 			}
-			else if (location == "/api/assigments" || location == "/api/assigmentadd" || location == "/api/myaccount" || location == "/api/assigment" && request.headers.auth != undefined) {
+			else if (location == "/api/assigments" || location == "/api/assigmentadd" || location == "/api/myaccount" || location == "/api/assigment" || location == "/api/lessons" && request.headers.auth != undefined) {
 				this.usr.permission(request.headers.auth).then((res) => {
 					if (res == true) {
 						if (location == "/api/assigments") {
 							this.writeSucessHeader(response, args, this.sendAssigments)
 						}
 						else if (location == "/api/assigmentadd" && request.method == "POST") {
+							args["token"] = request.headers.auth
 							this.writeSucessHeader(response, args, (res, args) => { this.writeAssigment(request, res, args) })
 						}
 						else if (location == "/api/assigment") {
 							this.writeSucessHeader(response, args, this.writeAssigmentPage)
+						}
+						else if (location == "/api/lessons") {
+							this.writeSucessHeader(response, args, this.getNextLessons)
 						}
 
 						else {
@@ -84,7 +88,7 @@ class Server {
 					user_agent = request.rawHeaders[i + 1]
 				}
 			})
-			let log = new Date().toDateString() + "  " + request.method + " " + location + " " + user_agent + "\n";
+			let log = new Date().toDateString() + "  " + request.socket.address().address + "  " + request.httpVersion + " " + request.method + " " + location + " " + user_agent + "\n";
 			fs.appendFile("./acess.log", log, () => { })
 
 		}).listen(port);
@@ -108,8 +112,8 @@ class Server {
 	}
 
 	writeAssigment = (req, res, args) => {
-		if(users_spam_limit[req.headers.auth] == undefined){
-			users_spam_limit[req.headers.auth] =0
+		if (users_spam_limit[req.headers.auth] == undefined) {
+			users_spam_limit[req.headers.auth] = 0
 		}
 		if (new Date().getTime() - users_spam_limit[req.headers.auth] > limits.spamlimit) {
 			users_spam_limit[req.headers.auth] = new Date().getTime()
@@ -120,7 +124,13 @@ class Server {
 			req.on('end', () => {
 				try {
 					let obj = JSON.parse(post)
-					if (this.database.addAssigment(obj)) {
+					let randomstring = ""
+					let chars = "abcdefghijklmnoprstuvwxz01234567890ABCDEFGHIJKLMNOPRSTQUV"
+					for (let i = 0; i < 32; i++) {
+						randomstring += chars[randomInt(chars.length - 1)]
+					}
+					obj.aid =  randomstring;
+					if (this.database.addAssigment(obj, args.token)) {
 						res.end(JSON.stringify(true))
 						this.onAssigmentAddCB(obj)
 
@@ -143,6 +153,36 @@ class Server {
 			res.write(JSON.stringify(obj))
 			res.end();
 		})
+	}
+	getNextLessons = async (response, args) => {
+		if (typeof (args.d) == Number || typeof (args.s) == Number || typeof (args.n) == Number) {
+			response.end("BAD REQEST")
+		}
+		else {
+
+			let start = 0;
+			let lessons_to_send = []
+			lessons.lessons.forEach((element, i) => {
+				let hour = element.split(':')[1]
+				if (hour == args.s) {
+					start = i - 1;
+					if (start < 0) {
+						start == 0;
+
+					}
+				}
+			})
+			let end = Math.min(args.n, lessons.lessons.length - start)
+			for (let i = start; i < end; i++) {
+				let res = await this.database.getLessons(args.d, lessons.lessons[i])
+				if (res.hour != undefined) {
+					lessons_to_send.push(res)
+				}
+
+			}
+			response.write(JSON.stringify(lessons_to_send))
+			response.end()
+		}
 	}
 
 }

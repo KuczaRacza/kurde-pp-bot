@@ -3,3 +3,6 @@ node_modules
 data.db
 images
 acess.log
+config.json
+lessons_start.json
+.vscode

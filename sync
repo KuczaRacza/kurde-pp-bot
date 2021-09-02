@@ -1,5 +1,7 @@
 #!/bin/bash
 cp website /home/www -Rf;
-chown www:www-data /home/www/website -Rf;
-chmod 755 /home/www/website -R;
+mv website kurde-pp;
+chown www:www /home/www/kurde-pp -Rf;
+chmod 770 /home/www/kurde-pp -R;
+cp website.conf /etc/nginx/conf.d/kurde-pp.conf
 echo 'synced';
