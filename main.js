@@ -19,7 +19,7 @@ let assigmentToEmbed = (assigment) => {
 	embed.addField("Termin:", new Date(assigment.due).toDateString(), true)
 	embed.addField("Przedmiot:", assigment.subject, true)
 	embed.addField("Grupa:", assigment.subclass, true)
-	embed.setURL('http://localhost/task.html?aid='+assigment.aid)
+	embed.setURL('https://kurde-pp.kuczaracza.com/task.html?aid='+assigment.aid)
 	return embed
 }
 function sendPlanMessage(time, nexttime) {

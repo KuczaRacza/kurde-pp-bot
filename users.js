@@ -107,7 +107,7 @@ class Session {
 
 		this.dscClient.guilds.fetch(conf.server).then((guild) => {
 			guild.members.fetch(user.discord).then((mem) => {
-				mem.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n http://localhost/account.html\n KOD: " + text)
+				mem.send("Zweryfikuj swoje konto\n wpisz ten kod w zakładce użytkowanika\n https://kurde-pp.kuczaracza.com/account.html\n KOD: " + text)
 				this.database.insert_verification_code(text, user.uid)
 				console.log("wysłano")
 			})
