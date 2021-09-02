@@ -1,3 +1,5 @@
+const host = "kurde-pp.kuczaracza.com"
+const protocol = "https"
 let cookie = {}
 let getCookie = () => {
 	if (document.cookie.length > 0) {
@@ -42,7 +44,7 @@ let setHttpParams = (endpoint, params) => {
 }
 let APIgetAssigments = (params) => {
 	let prm = new Promise((cb, err) => {
-		fetch(setHttpParams("http://localhost/api/assigment", params), { method: 'GET', headers: { "auth": cookie.token } }).then((res) => {
+		fetch(setHttpParams(protocol + "://" + host + "/api/assigment", params), { method: 'GET', headers: { "auth": cookie.token } }).then((res) => {
 			res.json().then((obj) => {
 				cb(obj)
 			})
@@ -52,7 +54,7 @@ let APIgetAssigments = (params) => {
 }
 let APIaddAssigment = (asigment) => {
 	return new Promise((resolve, reject) => {
-		fetch("http://localhost/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": cookie.token } }).then(response => {
+		fetch(protocol + "://" + host + "/api/assigmentadd", { method: 'POST', body: JSON.stringify(asigment), headers: { "auth": cookie.token } }).then(response => {
 			response.json().then(obj => {
 				resolve(obj)
 			})
@@ -61,7 +63,7 @@ let APIaddAssigment = (asigment) => {
 }
 let APIaddUser = (data) => {
 	return new Promise((resolve, reject) => {
-		fetch("http://localhost/api/useradd", { method: 'POST', body: JSON.stringify(data) }).then(response => {
+		fetch(protocol + "://" + host + "/api/useradd", { method: 'POST', body: JSON.stringify(data) }).then(response => {
 			response.json().then(obj => {
 				resolve(obj)
 			})
@@ -71,7 +73,7 @@ let APIaddUser = (data) => {
 }
 let APIloginUser = (login) => {
 	return new Promise((resolve, reject) => {
-		fetch("http://localhost/api/login", { method: 'POST', body: JSON.stringify(login) }).then(response => {
+		fetch(protocol + "://" + host + "/api/login", { method: 'POST', body: JSON.stringify(login) }).then(response => {
 			response.json().then(obj => {
 				resolve(obj)
 			})
@@ -81,7 +83,7 @@ let APIloginUser = (login) => {
 }
 let APImyUserInfo = () => {
 	return new Promise((resolve, reject) => {
-		fetch("http://localhost/api/myaccount", { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
+		fetch(protocol + "://" + host + "/api/myaccount", { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
 			response.json().then((obj => {
 				resolve(obj)
 			}))
@@ -90,7 +92,7 @@ let APImyUserInfo = () => {
 }
 let APIverifyAccount = (text) => {
 	return new Promise((resolve, reject) => {
-		fetch("http://localhost/api/verifyaccount?c=" + text, { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
+		fetch(protocol + "://" +host +"/api/verifyaccount?c=" + text, { method: 'GET', headers: { "auth": cookie.token } }).then((response) => {
 			response.json().then((obj => {
 				resolve(obj)
 			}))
@@ -99,7 +101,7 @@ let APIverifyAccount = (text) => {
 }
 let APIgetLessons = (start, day, number) => {
 	return new Promise((resolve, reject) => {
-		fetch("http://localhost/api/lessons?d=" + day + "&n=" + number + "&s=" + start, { method: 'GET', headers: { "auth": cookie.token } }).then(response => {
+		fetch(protocol +"://" + host + "/api/lessons?d=" + day + "&n=" + number + "&s=" + start, { method: 'GET', headers: { "auth": cookie.token } }).then(response => {
 			response.json().then(obj => {
 				resolve(obj)
 			})

@@ -16,7 +16,8 @@ class Database {
 			if (err) { console.log(err) }
 		})
 		this.database.run("CREATE TABLE IF NOT EXISTS verification_codes(uid TEXT,code TEXT,timestamp INTEGER)");
-		this.database.run("CREATE TABLE completed_assignments (aid	TEXT,uid	TEXT,timestamp	INTEGER,link	TEXT);")
+		this.database.run("CREATE TABLE IF NOT EXISTS completed_assignments (aid	TEXT,uid	TEXT,timestamp	INTEGER,link	TEXT);")
+		this.database.run("CREATE TABLE IF NOT EXISTS lessons (hour	TEXT,	room	TEXT,subject	TEXT,day INT);")
 	}
 	savemessage(msg) {
 		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake,channel) VALUES (?,?,?,?,?)");
