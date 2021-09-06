@@ -3,9 +3,9 @@ Description=kurde-pp-bot api
 After=syslog.target network.target remote-fs.target nss-lookup.target
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /home/www/backend/kurde-pp-bot/main.js
-WorkingDirectory=/home/www/backend/kurde-pp-bot/
+WorkingDirectory=/home/www/backend/kurde-pp-bot
 User=www
+ExecStart=/usr/bin/node /home/www/backend/kurde-pp-bot/main.js
 Restart=on-failure
 [Install]
 WantedBy=multi-user.target
