@@ -1,5 +1,6 @@
 #!/bin/bash
 cp ../website /home/www -Rf;
+rm -rf /home/www/kurde-pp;
 mv /home/www/website /home/www/kurde-pp;
 chown www:www /home/www/kurde-pp -Rf;
 chmod 770 /home/www/kurde-pp -R;
