@@ -7,9 +7,18 @@
 	<script src="./common.js"></script>
 	<script src="./nologin.js"></script>
 	<script src="./fetch.js"></script>
+	<script>
+		let start_fn = () => {
+			isLoged()
+			insertMyNick()
+			let now = new Date()
+			instertLessons(now.getDay(), now.getHours(), "lessons-plan")
+			insterAllDaysPlan()
+		}
+	</script>
 </head>
 
-<body onload=" isLoged();insertMyNick();instertLessons()">
+<body onload="start_fn()">
 	<div id="menu"><a href="/">
 			<div>Kurde PP bot</div>
 		</a>
@@ -18,9 +27,16 @@
 			</div>
 		</a>
 	</div>
+
 	<div id="main">
-		<div id="lessons-today"></div>
+		<h2>Najbiższe lekcje</h2>
+		<div id="lessons-plan"></div>
+		<br>
+		<h2>Plan lekcji</h2>
+		<div id="lessons-all">
+		</div>
 	</div>
+
 
 </body>
 

@@ -1,0 +1,8 @@
+#!/bin/bash
+cp ../website /home/www -Rf;
+rm -rf /home/www/kurde-pp
+mv /home/www/website /home/www/kurde-pp -Tf;
+chown www:www /home/www/kurde-pp -Rf;
+chmod 777 /home/www/kurde-pp -R;
+cp website.conf /etc/nginx/conf.d/kurde-pp.conf
+echo 'synced';

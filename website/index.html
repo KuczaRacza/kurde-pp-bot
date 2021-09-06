@@ -7,9 +7,20 @@
 	<script src="assigment.js"></script>
 	<script src="nologin.js"></script>
 	<script src="fetch.js"></script>
+	<script>
+		let start_fn = () => {
+			isLoged()
+			dashboardTasks()
+			insertMyNick()
+			let now = new Date()
+			instertLessons(now.getDay(), now.getHours(),"lessons-plan")
+			
+			instertLessons(now.getDay() + 1, 7,"lessons-plan")
+		}
+	</script>
 </head>
 
-<body onload="isLoged(); dashboardTasks(); insertMyNick(); instertLessons();">
+<body onload="start_fn();">
 	<div id="main">
 		<div id="menu"><a href="/">
 				<div>Kurde PP bot</div>
@@ -28,12 +39,14 @@
 				<div id="assigments"></div>
 			</div>
 			<div id="lessons-dash">
-				<h1>Lekcje</h1>
-				<div id="lessons-today"></div>
-				</div>
+				<a href="./lessons.html">
+					<h1>Lekcje</h1>
+				</a>
+				<div id="lessons-plan"></div>
 			</div>
-
 		</div>
+
+	</div>
 	</div>
 </body>
 
