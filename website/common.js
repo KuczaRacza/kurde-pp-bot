@@ -1,5 +1,5 @@
-const host = "localhost"
-const protocol = "http"
+const host = "kurde-pp.kuczaracza.com"
+const protocol = "https"
 let cookie = {}
 let getCookie = () => {
 	if (document.cookie.length > 0) {
