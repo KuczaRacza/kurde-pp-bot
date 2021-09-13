@@ -29,11 +29,11 @@ function getInput() {
 	errDiv.innerHTML = ""
 	assigment.title = document.getElementById('amt-title').value
 	if (assigment.title.length < limits['title-min']) {
-		errDiv.innerText += "tytuł  może mieć najwięcej " + limits['title-max'] + " znaków\n";
+		errDiv.innerText += "tytuł musi mieć co najmniej " + limits['title-min'] + " znaków\n";
 		ok = false
 	}
 	else if (assigment.title.length > limits['title-max']) {
-		errDiv.innerText += "tytuł musi mieć conajmniej " + limits['title-min'] + " znaków\n";
+		errDiv.innerText += "tytuł może mieć najwięcej " + limits['title-max'] + " znaków\n";
 		ok = false
 
 	}
@@ -43,7 +43,7 @@ function getInput() {
 
 		ok = false
 	} else if (assigment.description.length > limits['description-max']) {
-		errDiv.innerText += "opis  może mieć najwięcej " + limits['description-max'] + " znaków\n";
+		errDiv.innerText += "opis może mieć najwięcej " + limits['description-max'] + " znaków\n";
 		ok = false
 	}
 	assigment.due =  new Date(document.getElementById('amt-due').value).getTime()

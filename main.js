@@ -123,7 +123,7 @@ let sendNewAssigments = (assigment) => {
 
 		if (assigment[0] == undefined) {
 			if (assigment.due == undefined) {
-				chann.send("Brak zadań akutalnie")
+				chann.send("Brak zadań aktualnie")
 				return
 			} else {
 				chann.send({ embeds: [assigmentToEmbed(assigment)] })
