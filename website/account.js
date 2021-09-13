@@ -22,7 +22,7 @@ let instertInfo = (user) => {
 		let input_button = document.createElement('input')
 		input.id = "verify_me"
 		input_button.type = "button"
-		input_button.value = "wyśli"
+		input_button.value = "wyślij"
 		input_button.addEventListener('click', sendVerifyCode)
 		outdiv.append(warrning)
 		outdiv.append(input)
