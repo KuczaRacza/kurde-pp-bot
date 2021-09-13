@@ -13,10 +13,6 @@ let deleteAllCookies = () => {
     }
 }
 
-let logout = () => {
-	document.cookie = "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-}
-
 let getCookie = () => {
 	if (document.cookie.length > 0) {
 		const currentCookie = document.cookie.split("=");
@@ -61,7 +57,7 @@ let insertMyNick = () => {
 	menuNick.appendChild(document.createElement("br"));
 	let logoutLink = document.createElement("button");
 	logoutLink.innerText = "Log out";
-	logoutLink.onclick = () => { deleteAllCookies(); };
+	logoutLink.onclick = () => { deleteAllCookies(); window.location.reload() };
 	menuNick.appendChild(logoutLink);
 }
 let setHttpParams = (endpoint, params) => {
