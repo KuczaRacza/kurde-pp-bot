@@ -129,7 +129,7 @@ class Server {
 					for (let i = 0; i < 32; i++) {
 						randomstring += chars[randomInt(chars.length - 1)]
 					}
-					obj.aid =  randomstring;
+					obj.aid = randomstring;
 					if (this.database.addAssigment(obj, args.token)) {
 						res.end(JSON.stringify(true))
 						this.onAssigmentAddCB(obj)
@@ -160,25 +160,28 @@ class Server {
 		}
 		else {
 
-			let start = 0;
+			let start = -1;
 			let lessons_to_send = []
-			lessons.lessons.forEach((element, i) => {
-				let hour = element.split(':')[1]
-				if (hour == args.s) {
-					start = i - 1;
+			for (let i = 0; i < lessons.lessons.length; i++) {
+				let hour = lessons.lessons[i].split(':')[0]
+				if (Number(hour) > args.s - 1) {
+					start = i;
 					if (start < 0) {
 						start == 0;
 
 					}
+					break;
 				}
-			})
-			let end = Math.min(args.n, lessons.lessons.length - start)
-			for (let i = start; i < end; i++) {
-				let res = await this.database.getLessons(args.d, lessons.lessons[i])
-				if (res.hour != undefined) {
-					lessons_to_send.push(res)
-				}
+			}
+			if (start != -1) {
+				let end = Math.min(args.n, lessons.lessons.length - start)
+				for (let i = start; i < end; i++) {
+					let res = await this.database.getLessons(args.d, lessons.lessons[i])
+					if (res.hour != undefined) {
+						lessons_to_send.push(res)
+					}
 
+				}
 			}
 			response.write(JSON.stringify(lessons_to_send))
 			response.end()
