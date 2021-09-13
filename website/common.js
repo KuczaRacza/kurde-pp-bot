@@ -44,7 +44,10 @@ let myNick = () => {
 	}
 }
 let insertMyNick = () => {
-	document.getElementById('menu-nick').innerText = myNick()
+	let nickLink = document.createElement("a");
+	nickLink.innerText = myNick();
+	nickLink.href = "account.html";
+	document.getElementById('menu-nick').appendChild(nickLink);
 }
 let setHttpParams = (endpoint, params) => {
 	let url = endpoint;
