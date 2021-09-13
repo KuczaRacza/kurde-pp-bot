@@ -5,6 +5,7 @@ const { StreamDispatcher } = require('discord.js');
 class Database {
 
 	constructor() {
+		//creates needed tables
 		this.database = new sqlite.Database("data.db");
 		this.database.run("CREATE TABLE IF NOT EXISTS messages(author VARCHAR,content VARCHAR,atachments VARCHAR, snowflake VARCHAR, channel VARCHAR )", (err) => {
 			if (err) { console.log(err) }
@@ -19,7 +20,9 @@ class Database {
 		this.database.run("CREATE TABLE IF NOT EXISTS completed_assignments (aid	TEXT,uid	TEXT,timestamp	INTEGER,link	TEXT);")
 		this.database.run("CREATE TABLE IF NOT EXISTS lessons (hour	TEXT,	room	TEXT,subject	TEXT,day INT);")
 	}
+	//archives messages
 	savemessage(msg) {
+
 		let stm = this.database.prepare("INSERT INTO messages (author,content,atachments,snowflake,channel) VALUES (?,?,?,?,?)");
 		let att = ""
 		msg.attachments.forEach((element) => {
@@ -29,31 +32,35 @@ class Database {
 		stm.finalize();
 
 	}
+	//add assignments to db
 	addAssigment(assigmentObj, token) {
 		let tilte = assigmentObj.title;
 		let description = assigmentObj.description
 		let due = Number(assigmentObj.due)
 		let subject = assigmentObj.subject;
 		let subclass = assigmentObj.subclass;
-
+		//user input validation
 		if (tilte.length < assigmentsConfig['title-max'] && description.length < assigmentsConfig['description-max']
 			&& tilte.length > assigmentsConfig['title-min'] && description.length > assigmentsConfig['description-min']
 			&& due != undefined && due != NaN && due > 0 && assigmentsConfig.groups.includes(subclass)
 			&& assigmentsConfig.subjects.includes(subject)) {
+			//saves in db
 			let stm = this.database.prepare("INSERT INTO assigments (subclass,subject,title,description,due,created,aid,userid) VALUES (?,?,?,?,?,?,?,(SELECT uid FROM users WHERE token = ?))")
 
 			stm.run(subclass, subject, tilte, description, due, new Date().getTime(), assigmentObj.aid, token);
 			stm.finalize()
+			//sucess
 			return true
 		}
 		else {
+			//fail
 			return false
 		}
 	}
 	getAssigments(params) {
 
 
-
+		//dynamic statmen generation and user input valitanion
 		let sql = "SELECT * FROM assigments WHERE "
 		if (params.subclass != undefined) {
 			sql += "subclass = ? AND "
@@ -91,19 +98,20 @@ class Database {
 		stm.run(bindings)
 
 
-
+		//retus a promise
 		let promis = new Promise((resolve, reject) => {
 			let assigs = []
 			stm.each((err, row) => {
 				if (err) {
 					console.log(err)
 				}
-
+				//push each row in array
 				assigs.push(row)
 			}, (err, num) => {
 				if (err) {
 					console.log(err)
 				}
+				//after pushing resolves promise
 				resolve(assigs)
 			})
 			stm.finalize()
@@ -113,6 +121,7 @@ class Database {
 
 
 	}
+	//get lessons from database NO INPUT VALIDATION
 	getLessons(day, time) {
 		let stm = this.database.prepare("SELECT * FROM lessons WHERE hour = ? AND day = ?  ")
 		stm.run(time, day)
@@ -131,7 +140,10 @@ class Database {
 		})
 		return promise
 	}
+	//search user returns user object
 	getUser = (params) => {
+		//dynamic statmen generation and user input valitanion
+
 		let bindings = []
 		let sql = "SELECT * FROM users WHERE "
 		if (params.uid != undefined) {
@@ -190,6 +202,7 @@ class Database {
 		stm.run()
 		stm.finalize()
 	}
+	//updates user info
 	changeUser = (user) => {
 		let params = []
 		let sql = "UPDATE users SET "
@@ -225,6 +238,8 @@ class Database {
 		stm.run()
 		stm.finalize()
 	}
+	//validate usrer verifcation code
+	//codes should expires but now they doesn't
 	test_code = (code, token) => {
 		return new Promise((resolve, reject) => {
 			let sql = "SELECT * FROM verification_codes WHERE uid = (SELECT uid FROM users WHERE token = ?) AND code = ?"
@@ -250,6 +265,8 @@ class Database {
 			stm.finalize()
 		})
 	}
+	//writes verifiation code into db
+	//adds timestamp
 	insert_verification_code = (code, uid) => {
 		let sql = "INSERT  INTO verification_codes (uid,code,timestamp) VALUES (?,?,?) "
 		let stm = this.database.prepare(sql)
@@ -257,6 +274,8 @@ class Database {
 		stm.run()
 		stm.finalize()
 	}
+
+	//NOT TESTED YET
 	insert_completed_assignments = (entery, token) => {
 		let aid_test = "SELECT * FROM assigments WHERE aid =?"
 		let stm_aid_test = this.database.prepare(aid_test);
@@ -277,6 +296,8 @@ class Database {
 
 
 	}
+
+	//NOT TESTED YET
 	list_completed_assignments = (aid) => {
 		return new Promise((resolve, reject) => {
 			let aid_test = "SELECT * FROM assigments WHERE aid =?"
