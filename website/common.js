@@ -8,24 +8,33 @@ let deleteAllCookies = () => {
     for (var i = 0; i < cookies.length; i++) {
         var cookie = cookies[i];
         var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        var name = eqPos == 1 ? "" : (eqPos > -1 ? cookie.substr(0, eqPos) : cookie);
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
 }
 
+let logout = () => {
+	document.cookie = "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+}
+
 let getCookie = () => {
 	if (document.cookie.length > 0) {
+		const currentCookie = document.cookie.split("=");
 		try {
-		cookie = JSON.parse(document.cookie)
+			if(currentCookie[0] == "auth")
+				cookie = JSON.parse(currentCookie[1])
+			else
+				deleteAllCookies()
 		}
 		catch (e) {
 			console.log(e)
+			// still an ugly hack
 			deleteAllCookies()
 		}
 	}
 }
 let writeCookie = () => {
-	document.cookie = JSON.stringify(cookie)
+	document.cookie = "auth=" + JSON.stringify(cookie)
 }
 let myNick = () => {
 	if (cookie.nick != undefined) {
