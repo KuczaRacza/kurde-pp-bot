@@ -53,10 +53,16 @@ let myNick = () => {
 	}
 }
 let insertMyNick = () => {
+	let menuNick = document.getElementById('menu-nick');
 	let nickLink = document.createElement("a");
 	nickLink.innerText = myNick();
 	nickLink.href = "account.html";
-	document.getElementById('menu-nick').appendChild(nickLink);
+	menuNick.appendChild(nickLink);
+	menuNick.appendChild(document.createElement("br"));
+	let logoutLink = document.createElement("button");
+	logoutLink.innerText = "Log out";
+	logoutLink.onclick = () => { deleteAllCookies(); };
+	menuNick.appendChild(logoutLink);
 }
 let setHttpParams = (endpoint, params) => {
 	let url = endpoint;
