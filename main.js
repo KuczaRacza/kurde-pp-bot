@@ -1,6 +1,11 @@
+//for youtube playback
+const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
+const ytdl = require('ytdl-core');
+
+
 const Discord = require('discord.js');
 //itests required in discord js 13+
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_INTEGRATIONS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING, Discord.Intents.FLAGS.GUILDS] });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_INTEGRATIONS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_VOICE_STATES] });
 const Config = require('./config.json')
 const DicordToken = require("./token.json")
 const { randomInt } = require('node:crypto');
@@ -153,7 +158,27 @@ client.on('messageCreate', msg => {
 				sendNewAssigments(results)
 			})
 		}
+		//for audio playback from url
+		if (msg.content.includes("-p")) {
+			if (msg.member.voice) {
+				let split = msg.content.split("https://www.youtube.com")
+				if (split.length >= 2) {
+					let url = "https://www.youtube.com" + split[1]
+					let stream = ytdl(url, { filter: 'audioonly' });
+					let player = createAudioPlayer();
+					let resource = createAudioResource(stream, {
+						inlineVolume: true
+					});
+					let connection = joinVoiceChannel({
+						channelId: msg.member.voice.channelId,
+						guildId: msg.guildId,
+						adapterCreator: msg.guild.voiceAdapterCreator
+					});
+					connection.subscribe(player)
+					player.play(resource)
+				}
+			}
+		}
 	}
 });
-
 client.login(DicordToken.token);

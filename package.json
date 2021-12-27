@@ -1,9 +1,13 @@
 {
   "dependencies": {
     "@discordjs/opus": "github:discordjs/opus",
+    "@discordjs/voice": "^0.7.5",
     "discord.js": "^13.1.0",
+    "libsodium-wrappers": "^0.7.9",
     "npm": "^7.20.6",
     "sqlite3": "^5.0.2",
-    "ytdl": "^1.4.1"
+    "tweetnacl": "^1.0.3",
+    "ytdl": "^1.4.1",
+    "ytdl-core": "^4.9.2"
   }
 }
