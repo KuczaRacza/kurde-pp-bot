@@ -12,11 +12,13 @@ const { randomInt } = require('node:crypto');
 const db_lib = require("./databse")
 const WWWServer = require("./website")
 const lessonTime = require('./lessons_start.json');
+const muisc_module = require('./music');
+const { config } = require('node:process');
 //sqlite database wrapper	
 const database = new db_lib.DatabaseApp()
 //simple http server
 const server = new WWWServer.HttpServer()
-
+const music = new muisc_module.MsPlayer()
 //assignment object or array of objsc  discord embed
 let assigmentToEmbed = (assigment) => {
 	console.log(assigment)
@@ -120,7 +122,10 @@ client.on('ready', () => {
 	surprise(sendPlanMessage)
 	server.onAssigmentAddCB = sendNewAssigments;
 	database.dscClient = client;
-
+	music.client = client;
+	client.guilds.fetch(Config.server).then((res) => {
+		music.guild = res;
+	})
 });
 //bot command sending active assigments 
 let sendNewAssigments = (assigment) => {
@@ -160,24 +165,8 @@ client.on('messageCreate', msg => {
 		}
 		//for audio playback from url
 		if (msg.content.includes("-p")) {
-			if (msg.member.voice) {
-				let split = msg.content.split("https://www.youtube.com")
-				if (split.length >= 2) {
-					let url = "https://www.youtube.com" + split[1]
-					let stream = ytdl(url, { filter: 'audioonly' });
-					let player = createAudioPlayer();
-					let resource = createAudioResource(stream, {
-						inlineVolume: true
-					});
-					let connection = joinVoiceChannel({
-						channelId: msg.member.voice.channelId,
-						guildId: msg.guildId,
-						adapterCreator: msg.guild.voiceAdapterCreator
-					});
-					connection.subscribe(player)
-					player.play(resource)
-				}
-			}
+			music.play(msg.content.substring(msg.content.indexOf('https://'), msg.content.length), msg.member.voice.channelId);
+
 		}
 	}
 });
